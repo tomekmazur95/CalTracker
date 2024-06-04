@@ -1,0 +1,29 @@
+services:
+
+  mysqldb:
+    image: mysql:5.7
+    container_name: mysql-db
+    restart: always
+    networks:
+      - calTracker-mysql-network
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: testDb
+      MYSQL_USER: user_calTracker
+      MYSQL_PASSWORD: password
+
+  kcalApp:
+    image: caltracker
+    container_name: caltracker-app
+    restart: always
+    networks:
+      - calTracker-mysql-network
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysqldb
+
+networks:
+  calTracker-mysql-network:
