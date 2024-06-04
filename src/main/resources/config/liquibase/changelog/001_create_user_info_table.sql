@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset Thomas:add_user_table
+--changeset Thomas:add_user_info_table
 --comment Initial changeset for userinfo_table
 create table users_info
 (
