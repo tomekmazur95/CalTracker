@@ -4,5 +4,14 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <include file="/config/liquibase/changelog/001_create_tables.sql"/>
+    <include file="/config/liquibase/changelog/001_create_user_info_table.sql"/>
+    <include file="/config/liquibase/changelog/002_create_users_table.sql"/>
+    <include file="/config/liquibase/changelog/003_create_measurements_table.sql"/>
+    <include file="/config/liquibase/changelog/004_create_nutritions_table.sql"/>
+    <include file="/config/liquibase/changelog/005_create_images_table.sql"/>
+    <include file="/config/liquibase/changelog/006_create_food_facts_table.sql"/>
+    <include file="/config/liquibase/changelog/007_create_foods_table.sql"/>
+    <include file="/config/liquibase/changelog/008_create_meals_table.sql"/>
+    <include file="/config/liquibase/changelog/009_create_meal_food_table.sql"/>
+    <include file="/config/liquibase/changelog/010_create_food_dairies_table.sql"/>
 </databaseChangeLog>
