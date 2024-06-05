@@ -27,9 +27,6 @@ class AuthenticationServiceTest extends Specification {
             authenticationManager)
 
     def "should throw UserAlreadyExistsException for register method"() {
-        given:
-        RegisterRequest registerRequest = new RegisterRequest("john@gmail.com", "password")
-
         when:
         authenticationService.register(registerRequest)
 
@@ -43,6 +40,12 @@ class AuthenticationServiceTest extends Specification {
             0 * userInfoRepository.save(_ as UserInfo)
             0 * jwtService.generateToken(_ as UserDetails)
         }
+
+        where:
+        registerRequest                                     | _
+        new RegisterRequest("john@gmail.com", "password")   | _
+        new RegisterRequest("ann@gmail.com", "password")    | _
+        new RegisterRequest("thomas@gmail.com", "password") | _
     }
 
     def "positive path for register method"() {
@@ -84,7 +87,7 @@ class AuthenticationServiceTest extends Specification {
         then:
         1 * userInfoRepository.findByEmail(_ as String) >> Optional.empty()
         def exception = thrown(UserNotFoundException)
-        exception.message == "User with email: "  + authenticationRequest.getEmail() + " not found"
+        exception.message == "User with email: " + authenticationRequest.getEmail() + " not found"
 
         verifyAll {
             0 * jwtService.generateToken(_ as UserDetails)

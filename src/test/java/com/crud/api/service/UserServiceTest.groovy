@@ -14,13 +14,11 @@ import com.crud.api.mapper.*
 import com.crud.api.repository.MeasurementRepository
 import com.crud.api.repository.UserInfoRepository
 import com.crud.api.repository.UserRepository
-import org.junit.Ignore
 import org.springframework.data.domain.Sort
 import spock.lang.Specification
 import java.time.LocalDate
 
 
-@Ignore
 class UserServiceTest extends Specification {
 
     UserRepository userRepository = Mock()
