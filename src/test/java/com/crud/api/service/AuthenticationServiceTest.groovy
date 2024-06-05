@@ -79,8 +79,6 @@ class AuthenticationServiceTest extends Specification {
     }
 
     def "should throw UserNotFoundException for authenticate method"() {
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest("john@gmail.com", "password")
-
         when:
         authenticationService.authenticate(authenticationRequest)
 
@@ -93,5 +91,11 @@ class AuthenticationServiceTest extends Specification {
             0 * jwtService.generateToken(_ as UserDetails)
             1 * authenticationManager.authenticate(_ as Authentication)
         }
+
+        where:
+        authenticationRequest                                     | _
+        new AuthenticationRequest("john@gmail.com", "password")   | _o
+        new AuthenticationRequest("ann@gmail.com", "password")    | _
+        new AuthenticationRequest("thomas@gmail.com", "password") | _
     }
 }
