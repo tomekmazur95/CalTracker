@@ -94,7 +94,7 @@ class AuthenticationServiceTest extends Specification {
 
         where:
         authenticationRequest                                     | _
-        new AuthenticationRequest("john@gmail.com", "password")   | _o
+        new AuthenticationRequest("john@gmail.com", "password")   | _
         new AuthenticationRequest("ann@gmail.com", "password")    | _
         new AuthenticationRequest("thomas@gmail.com", "password") | _
     }

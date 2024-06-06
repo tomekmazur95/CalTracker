@@ -9,6 +9,7 @@ import com.crud.api.repository.UserInfoRepository;
 import com.crud.api.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,15 +60,27 @@ class MyIntegrationTests {
     }
 
     @Test
-    void shouldReturnUserByUserName() {
-        Optional<User> userByUserInfoId = userRepository.findUserByUserInfoId(1L);
-        Assertions.assertTrue(userByUserInfoId.isPresent());
+    void shouldReturnUserInfoByEmail() {
+        Optional<UserInfo> userInfo = userInfoRepository.findByEmail("john@gmail.com");
+        Assertions.assertTrue(userInfo.isPresent());
     }
 
     @Test
-    void shouldThrowException() {
-        Optional<User> byId = userRepository.findById(2L);
-        Assertions.assertTrue(byId.isEmpty());
+    void shouldReturnEmptyOptionalWhenUserInfoNotFound() {
+        Optional<UserInfo> user = userInfoRepository.findByEmail("ann@gmail.com");
+        Assertions.assertTrue(user.isEmpty());
+    }
+
+    @Test
+    void shouldReturnUserByUserName() {
+        Optional<User> user = userRepository.findUserByUserInfoId(1L);
+        Assertions.assertTrue(user.isPresent());
+    }
+
+    @Test
+    void shouldReturnEmptyOptionalWhenUserNotFound() {
+        Optional<User> user = userRepository.findById(2L);
+        Assertions.assertTrue(user.isEmpty());
     }
 }
 
