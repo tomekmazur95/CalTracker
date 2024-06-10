@@ -1,4 +1,4 @@
-package com.crud.api.service
+package com.crud.api.service.UnitTests
 
 import com.crud.api.dto.AuthenticationRequest
 import com.crud.api.dto.RegisterRequest
@@ -7,6 +7,8 @@ import com.crud.api.enums.Role
 import com.crud.api.error.UserAlreadyExistsException
 import com.crud.api.error.UserNotFoundException
 import com.crud.api.repository.UserInfoRepository
+import com.crud.api.service.AuthenticationService
+import com.crud.api.service.JwtService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails

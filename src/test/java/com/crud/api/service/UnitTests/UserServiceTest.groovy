@@ -1,4 +1,4 @@
-package com.crud.api.service
+package com.crud.api.service.UnitTests
 
 import com.crud.api.dto.RequestMeasurementDTO
 import com.crud.api.dto.RequestUserDTO
@@ -14,6 +14,7 @@ import com.crud.api.mapper.*
 import com.crud.api.repository.MeasurementRepository
 import com.crud.api.repository.UserInfoRepository
 import com.crud.api.repository.UserRepository
+import com.crud.api.service.UserService
 import org.springframework.data.domain.Sort
 import spock.lang.Specification
 import java.time.LocalDate
