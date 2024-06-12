@@ -9,7 +9,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class AppMySQLContainer {
+public abstract class AppMySQLContainer {
 
     private static final String IMAGE_VERSION = "mysql:5.7";
 

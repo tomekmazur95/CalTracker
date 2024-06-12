@@ -17,7 +17,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
 @ExtendWith(DatabaseSetupExtension.class)
-public class UserInfoRepositoryIT {
+public class UserInfoRepositoryIT extends AppMySQLContainer{
 
     @Autowired
     UserInfoRepository userInfoRepository;
