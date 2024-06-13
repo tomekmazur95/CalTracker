@@ -1,4 +1,4 @@
-package com.crud.api.service.IntegrationTests;
+package com.crud.api.service.integrationTests;
 
 
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -9,7 +9,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class AppMySQLContainer {
+public abstract class AppMySQLContainer {
 
     private static final String IMAGE_VERSION = "mysql:5.7";
 
