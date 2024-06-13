@@ -1,4 +1,4 @@
-package com.crud.api.service.IntegrationTests;
+package com.crud.api.service.integrationTests;
 
 
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

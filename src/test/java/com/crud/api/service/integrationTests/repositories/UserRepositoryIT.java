@@ -1,4 +1,4 @@
-package com.crud.api.service.IntegrationTests;
+package com.crud.api.service.integrationTests.repositories;
 
 import com.crud.api.entity.User;
 import com.crud.api.entity.UserInfo;
@@ -7,13 +7,17 @@ import com.crud.api.enums.Gender;
 import com.crud.api.enums.Role;
 import com.crud.api.repository.UserInfoRepository;
 import com.crud.api.repository.UserRepository;
+import com.crud.api.service.integrationTests.AppMySQLContainer;
+import com.crud.api.service.integrationTests.DatabaseSetupExtension;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @ExtendWith(DatabaseSetupExtension.class)
 public class UserRepositoryIT extends AppMySQLContainer {
