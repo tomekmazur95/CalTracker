@@ -231,6 +231,65 @@ public class UserControllerTestIT extends AppMySQLContainer {
         Assertions.assertTrue(userRepository.findAll().isEmpty());
     }
 
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void shouldReturnUsersList() throws Exception {
+        prepareData();
+
+        mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2));
+
+        Assertions.assertEquals(2, userRepository.findAll().size());
+        Assertions.assertEquals(2, measurementRepository.findAll().size());
+        Assertions.assertEquals(2, measurementRepository.findAll().size());
+    }
+
+    private void prepareData() {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setEmail("john@gmail.com");
+        userInfo.setPassword("password");
+        userInfo.setRole(Role.USER);
+        userInfoRepository.save(userInfo);
+
+        User user = new User();
+        user.setGender(Gender.MALE);
+        user.setUserInfo(userInfo);
+        user.setUserName("John");
+        user.setAge(30);
+        user.setActivity(Activity.EXTRA_ACTIVE);
+        userRepository.save(user);
+
+        Measurement height = new Measurement();
+        height.setUser(user);
+        height.setType(MeasureType.HEIGHT);
+        height.setValue(183.0);
+        height.setUnit(Unit.CENTIMETERS);
+        measurementRepository.save(height);
+
+        UserInfo userInfo2 = new UserInfo();
+        userInfo2.setEmail("thomas@gmail.com");
+        userInfo2.setPassword("password");
+        userInfo2.setRole(Role.USER);
+        userInfoRepository.save(userInfo2);
+
+        User user2 = new User();
+        user2.setGender(Gender.MALE);
+        user2.setUserInfo(userInfo2);
+        user2.setUserName("Thomas");
+        user2.setAge(17);
+        user2.setActivity(Activity.SEDENTARY);
+        userRepository.save(user2);
+
+        Measurement height2 = new Measurement();
+        height2.setUser(user2);
+        height2.setType(MeasureType.HEIGHT);
+        height2.setValue(190.0);
+        height2.setUnit(Unit.CENTIMETERS);
+        measurementRepository.save(height2);
+    }
+
     private String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
