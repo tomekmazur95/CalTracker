@@ -1,4 +1,4 @@
-package com.crud.api.service.integrationTests.controllers;
+package com.crud.api.service.integration.controller;
 
 import com.crud.api.dto.RequestMeasurementDTO;
 import com.crud.api.dto.RequestUserDTO;
@@ -11,8 +11,9 @@ import com.crud.api.error.UserNotFoundException;
 import com.crud.api.repository.MeasurementRepository;
 import com.crud.api.repository.UserInfoRepository;
 import com.crud.api.repository.UserRepository;
-import com.crud.api.service.integrationTests.AppMySQLContainer;
-import com.crud.api.service.integrationTests.DatabaseSetupExtension;
+import com.crud.api.service.integration.AppMySQLContainer;
+import com.crud.api.service.integration.DatabaseSetupExtension;
+import com.crud.api.service.integration.helper.TestEntityFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,8 +29,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -68,27 +71,15 @@ public class UserControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     void shouldCreateUser() throws Exception {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setEmail("john@gmail.com");
-        userInfo.setPassword("password");
-        userInfo.setRole(Role.USER);
+        UserInfo userInfo = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password");
         userInfoRepository.save(userInfo);
-
-        RequestMeasurementDTO requestMeasurementDTO = new RequestMeasurementDTO();
-        requestMeasurementDTO.setType(MeasureType.HEIGHT);
-        requestMeasurementDTO.setValue(183.0);
-        requestMeasurementDTO.setUnit(Unit.CENTIMETERS);
-
-        RequestUserDTO requestUserDTO = new RequestUserDTO();
-        requestUserDTO.setUserName("John");
-        requestUserDTO.setGender(Gender.MALE);
-        requestUserDTO.setActivity(Activity.MODERATELY_ACTIVE);
-        requestUserDTO.setAge(30);
-        requestUserDTO.setHeight(requestMeasurementDTO);
+        RequestMeasurementDTO height = TestEntityFactory.createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
+        RequestUserDTO userDTO = TestEntityFactory.createRequestUserDTO("John", Gender.MALE, Activity.MODERATELY_ACTIVE, 30);
+        userDTO.setHeight(height);
 
         mockMvc.perform(post("/users/{userInfoId}", userInfo.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(requestUserDTO)))
+                        .content(asJsonString(userDTO)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
@@ -192,6 +183,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     void shouldThrowExceptionWhenCreateUserWithIncorrectUserInfoID() throws Exception {
+        Long id = 10L;
 
         RequestMeasurementDTO requestMeasurementDTO = new RequestMeasurementDTO();
         requestMeasurementDTO.setType(MeasureType.HEIGHT);
@@ -205,7 +197,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
         requestUserDTO.setAge(20);
         requestUserDTO.setHeight(requestMeasurementDTO);
 
-        MvcResult result = mockMvc.perform(post("/users/{userInfoId}", 10)
+        MvcResult result = mockMvc.perform(post("/users/{userInfoId}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(requestUserDTO)))
                 .andDo(print())
@@ -215,7 +207,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
         String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
         Assertions.assertTrue(result.getResolvedException() instanceof UserNotFoundException);
-        Assertions.assertEquals(String.format("User with id: %s not found", 10), errorMessage);
+        Assertions.assertEquals(String.format("User with id: %s not found", id), errorMessage);
     }
 
 
@@ -247,47 +239,28 @@ public class UserControllerTestIT extends AppMySQLContainer {
     }
 
     private void prepareData() {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setEmail("john@gmail.com");
-        userInfo.setPassword("password");
-        userInfo.setRole(Role.USER);
-        userInfoRepository.save(userInfo);
+        for (int i = 0; i < 2; i++) {
+            StringBuilder password = new StringBuilder();
+            for (int j = 0; j < 5; j++) {
+                password.append(new Random().nextInt(9));
+            }
+            UserInfo userInfo = TestEntityFactory.createUserInfoDomain(i + "@gmail.com", password.toString());
+            userInfoRepository.save(userInfo);
+            List<Gender> genderList = new ArrayList<>();
+            genderList.add(Gender.MALE);
+            genderList.add(Gender.FEMALE);
+            User userDomain = TestEntityFactory.createUserDomain(
+                    i + "name",
+                    genderList.get(new Random().nextInt(genderList.size())),
+                    Activity.getActivityList().get(new Random().nextInt(Activity.getActivityList().size())),
+                    new Random().nextInt(18, 60));
+            userDomain.setUserInfo(userInfo);
+            userRepository.save(userDomain);
 
-        User user = new User();
-        user.setGender(Gender.MALE);
-        user.setUserInfo(userInfo);
-        user.setUserName("John");
-        user.setAge(30);
-        user.setActivity(Activity.EXTRA_ACTIVE);
-        userRepository.save(user);
-
-        Measurement height = new Measurement();
-        height.setUser(user);
-        height.setType(MeasureType.HEIGHT);
-        height.setValue(183.0);
-        height.setUnit(Unit.CENTIMETERS);
-        measurementRepository.save(height);
-
-        UserInfo userInfo2 = new UserInfo();
-        userInfo2.setEmail("thomas@gmail.com");
-        userInfo2.setPassword("password");
-        userInfo2.setRole(Role.USER);
-        userInfoRepository.save(userInfo2);
-
-        User user2 = new User();
-        user2.setGender(Gender.MALE);
-        user2.setUserInfo(userInfo2);
-        user2.setUserName("Thomas");
-        user2.setAge(17);
-        user2.setActivity(Activity.SEDENTARY);
-        userRepository.save(user2);
-
-        Measurement height2 = new Measurement();
-        height2.setUser(user2);
-        height2.setType(MeasureType.HEIGHT);
-        height2.setValue(190.0);
-        height2.setUnit(Unit.CENTIMETERS);
-        measurementRepository.save(height2);
+            Measurement heightDomain = TestEntityFactory.createHeight(new Random().nextDouble(160.0, 190.0));
+            heightDomain.setUser(userDomain);
+            measurementRepository.save(heightDomain);
+        }
     }
 
     private String asJsonString(final Object obj) {

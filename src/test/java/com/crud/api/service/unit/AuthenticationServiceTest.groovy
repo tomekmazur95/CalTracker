@@ -1,4 +1,4 @@
-package com.crud.api.service.unitTests
+package com.crud.api.service.unit
 
 import com.crud.api.dto.AuthenticationRequest
 import com.crud.api.dto.RegisterRequest

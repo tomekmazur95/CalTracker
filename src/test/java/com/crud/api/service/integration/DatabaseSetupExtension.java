@@ -1,4 +1,4 @@
-package com.crud.api.service.integrationTests;
+package com.crud.api.service.integration;
 
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
