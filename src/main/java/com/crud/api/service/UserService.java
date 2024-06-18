@@ -19,7 +19,10 @@ import com.crud.api.repository.MeasurementRepository;
 import com.crud.api.repository.UserInfoRepository;
 import com.crud.api.repository.UserRepository;
 
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -108,7 +111,10 @@ public class UserService {
 
     private Measurement fetchHeightByUserId(Long id) {
         List<Measurement> list = measurementRepository.findAllByUserId(id, Sort.by(DATE));
-        List<Measurement> latestHeight = list.stream().filter(e -> e.getType().equals(MeasureType.HEIGHT)).toList();
+        List<Measurement> latestHeight = list.stream()
+                .filter(e -> e.getType().equals(MeasureType.HEIGHT))
+                .sorted(Comparator.comparing(Measurement::getId).reversed())
+                .toList();
         return latestHeight.get(0);
     }
 
