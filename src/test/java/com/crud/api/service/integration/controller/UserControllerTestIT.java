@@ -220,6 +220,21 @@ public class UserControllerTestIT extends AppMySQLContainer {
         Assertions.assertEquals(1, userMeasurements.size());
     }
 
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void shouldThrowExceptionWhenUserNotFoundInFindById() throws Exception {
+        MvcResult result = mockMvc.perform(get("/users/{userId}", 10))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
+        Assertions.assertTrue(result.getResolvedException() instanceof UserNotFoundException);
+        Assertions.assertEquals(String.format("User with id: %s not found", 10), errorMessage);
+    }
+
+
     private List<User> prepareData(int numberOfUsers) {
         List<User> userList = new ArrayList<>();
         for (int i = 0; i < numberOfUsers; i++) {
