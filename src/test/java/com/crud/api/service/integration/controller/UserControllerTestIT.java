@@ -223,7 +223,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
     @Test
     @WithMockUser(authorities = {"USER"})
-    public void shouldThrowExceptionWhenUserNotFoundInFindById() throws Exception {
+    public void shouldThrowExceptionWhenUserNotFoundById() throws Exception {
         MvcResult result = mockMvc.perform(get("/users/{userId}", 10))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
@@ -258,6 +258,21 @@ public class UserControllerTestIT extends AppMySQLContainer {
         Assertions.assertTrue(userRepository.existsByUserInfoId(userInfo.getId()));
         List<Measurement> userMeasurements = measurementRepository.findAll();
         Assertions.assertEquals(1, userMeasurements.size());
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    public void shouldThrowExceptionWhenUserNotFoundByUserInfoId() throws Exception {
+        MvcResult result = mockMvc.perform(get("/users/userInfo")
+                        .param("id", "10")
+                ).andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
+        Assertions.assertTrue(result.getResolvedException() instanceof UserNotFoundException);
+        Assertions.assertEquals(String.format("User with user info id: %s not found", 10), errorMessage);
     }
 
 
