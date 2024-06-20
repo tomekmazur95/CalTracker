@@ -74,7 +74,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
     @Test
     @WithMockUser(authorities = {"USER"})
-    void shouldCreateUser() throws Exception {
+    public void shouldCreateUser() throws Exception {
         UserInfo userInfo = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password");
         userInfoRepository.save(userInfo);
         RequestMeasurementDTO height = TestEntityFactory.createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
@@ -98,7 +98,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
     @Test
     @WithMockUser(authorities = {"USER"})
-    void shouldThrowExceptionWhenCreateUserWithNullUserName() throws Exception {
+    public void shouldThrowExceptionWhenCreateUserWithNullUserName() throws Exception {
         UserInfo userInfo = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password");
         userInfoRepository.save(userInfo);
         RequestMeasurementDTO requestMeasurementDTO = TestEntityFactory.createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
@@ -119,7 +119,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
     @Test
     @WithMockUser(authorities = {"USER"})
-    void shouldThrowExceptionWhenCreateUserWithUserInfoAlreadyExists() throws Exception {
+    public void shouldThrowExceptionWhenCreateUserWithUserInfoAlreadyExists() throws Exception {
         UserInfo userInfo = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password");
         userInfoRepository.save(userInfo);
         User user = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 30);
@@ -155,7 +155,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
     @Test
     @WithMockUser(authorities = {"USER"})
-    void shouldThrowExceptionWhenCreateUserWithIncorrectUserInfoID() throws Exception {
+    public void shouldThrowExceptionWhenCreateUserWithIncorrectUserInfoID() throws Exception {
         Long id = 10L;
         RequestMeasurementDTO requestMeasurementDTO = TestEntityFactory.createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 170.0);
         RequestUserDTO requestUserDTO = TestEntityFactory.createRequestUserDTO("Ann", Gender.FEMALE, Activity.LIGHTLY_ACTIVE, 20);
@@ -177,7 +177,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
     @Test
     @WithMockUser(authorities = {"USER"})
-    void shouldReturnEmptyUsersList() throws Exception {
+    public void shouldReturnEmptyUsersList() throws Exception {
 
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
@@ -189,7 +189,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
     @Test
     @WithMockUser(authorities = {"USER"})
-    void shouldReturnUsersList() throws Exception {
+    public void shouldReturnUsersList() throws Exception {
         int numberOfUsers = 2;
         prepareData(numberOfUsers);
 
@@ -205,8 +205,9 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
     @Test
     @WithMockUser(authorities = {"USER"})
-    void shouldReturnUserById() throws Exception {
-        List<User> userList = prepareData(1);
+    public void shouldReturnUserById() throws Exception {
+        int numberOfUsers = 1;
+        List<User> userList = prepareData(numberOfUsers);
         User user = userList.get(0);
         mockMvc.perform(get("/users/{userId}", user.getId()))
                 .andDo(print())
@@ -217,12 +218,12 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
         Assertions.assertTrue(userRepository.existsByUserInfoId(user.getUserInfo().getId()));
         List<Measurement> userMeasurements = measurementRepository.findAll();
-        Assertions.assertEquals(1, userMeasurements.size());
+        Assertions.assertEquals(numberOfUsers, userMeasurements.size());
     }
 
     @Test
     @WithMockUser(authorities = {"USER"})
-    void shouldThrowExceptionWhenUserNotFoundInFindById() throws Exception {
+    public void shouldThrowExceptionWhenUserNotFoundInFindById() throws Exception {
         MvcResult result = mockMvc.perform(get("/users/{userId}", 10))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
@@ -232,6 +233,31 @@ public class UserControllerTestIT extends AppMySQLContainer {
         String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
         Assertions.assertTrue(result.getResolvedException() instanceof UserNotFoundException);
         Assertions.assertEquals(String.format("User with id: %s not found", 10), errorMessage);
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    public void shouldReturnUserByUserInfoId() throws Exception {
+        UserInfo userInfo = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password");
+        userInfoRepository.save(userInfo);
+        User user = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 30);
+        user.setUserInfo(userInfo);
+        userRepository.save(user);
+        Measurement height = TestEntityFactory.createHeight(183.0);
+        height.setUser(user);
+        measurementRepository.save(height);
+
+        mockMvc.perform(get("/users/userInfo")
+                        .param("id", String.valueOf(userInfo.getId()))
+                ).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.userName").value("John"))
+                .andExpect(jsonPath("$.height").exists());
+
+        Assertions.assertTrue(userRepository.existsByUserInfoId(userInfo.getId()));
+        List<Measurement> userMeasurements = measurementRepository.findAll();
+        Assertions.assertEquals(1, userMeasurements.size());
     }
 
 
