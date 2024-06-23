@@ -38,8 +38,7 @@ import java.util.Objects;
 import java.util.Random;
 
 import static com.crud.api.enums.Gender.getGenderList;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -263,8 +262,9 @@ public class UserControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     public void shouldThrowExceptionWhenUserNotFoundByUserInfoId() throws Exception {
+        int userInfoId = 10;
         MvcResult result = mockMvc.perform(get("/users/userInfo")
-                        .param("id", "10")
+                        .param("id", String.valueOf(userInfoId))
                 ).andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().isNotFound())
@@ -272,7 +272,52 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
         String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
         Assertions.assertTrue(result.getResolvedException() instanceof UserNotFoundException);
-        Assertions.assertEquals(String.format("User with user info id: %s not found", 10), errorMessage);
+        Assertions.assertEquals(String.format("User with user info id: %s not found", userInfoId), errorMessage);
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    public void shouldThrowExceptionWhenUserNotFoundWhenUpdateUser() throws Exception {
+        int userId = 10;
+        RequestUserDTO userDTO = TestEntityFactory.createRequestUserDTO("Thomas", Gender.MALE, Activity.MODERATELY_ACTIVE, 40);
+
+        MvcResult result = mockMvc.perform(patch("/users/{id}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(userDTO)))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
+                .andReturn();
+        String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
+        Assertions.assertTrue(result.getResolvedException() instanceof UserNotFoundException);
+        Assertions.assertEquals(String.format("User with id: %s not found", userId), errorMessage);
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    public void shouldUpdateUser() throws Exception {
+        List<User> users = prepareData(1);
+        Long userId = users.get(0).getId();
+        RequestMeasurementDTO height = TestEntityFactory.createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
+        RequestUserDTO requestUserDTO = TestEntityFactory.createRequestUserDTO("John", Gender.MALE, Activity.LIGHTLY_ACTIVE, 30);
+        requestUserDTO.setHeight(height);
+
+        User userBeforeUpdate = userRepository.findById(userId).orElseThrow();
+        Assertions.assertEquals(users.get(0).getAge(), userBeforeUpdate.getAge());
+
+        mockMvc.perform(put("/users/{id}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(requestUserDTO)))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userName").value("John"))
+                .andExpect(jsonPath("$.gender").value("MALE"))
+                .andExpect(jsonPath("$.height").exists())
+                .andExpect(jsonPath("$.height.value").value(183.0));
+
+        User updatedUser = userRepository.findById(userId).orElseThrow();
+        Assertions.assertEquals("John", updatedUser.getUserName());
     }
 
 
