@@ -1,6 +1,7 @@
 package com.crud.api.service.integration.controller;
 
 import com.crud.api.dto.RequestMeasurementDTO;
+import com.crud.api.dto.RequestUserActivityDTO;
 import com.crud.api.dto.RequestUserDTO;
 import com.crud.api.entity.Measurement;
 import com.crud.api.entity.User;
@@ -281,7 +282,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
         int userId = 10;
         RequestUserDTO userDTO = TestEntityFactory.createRequestUserDTO("Thomas", Gender.MALE, Activity.MODERATELY_ACTIVE, 40);
 
-        MvcResult result = mockMvc.perform(patch("/users/{id}", userId)
+        MvcResult result = mockMvc.perform(put("/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(userDTO)))
                 .andDo(print())
@@ -320,6 +321,23 @@ public class UserControllerTestIT extends AppMySQLContainer {
         Assertions.assertEquals("John", updatedUser.getUserName());
     }
 
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    public void shouldUpdateActivity() throws Exception {
+        List<User> users = prepareData(1);
+        User user = users.get(0);
+        RequestUserActivityDTO requestUserActivityDTO = TestEntityFactory.createRequestUserActivityDTO(Activity.SEDENTARY);
+        mockMvc.perform(patch("/users/{id}", user.getId())
+
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(requestUserActivityDTO)))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.activity").value("SEDENTARY"))
+                .andExpect(jsonPath("$.id").value(user.getId()));
+    }
 
     private List<User> prepareData(int numberOfUsers) {
         List<User> userList = new ArrayList<>();
