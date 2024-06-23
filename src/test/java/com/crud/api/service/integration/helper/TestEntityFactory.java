@@ -1,6 +1,7 @@
 package com.crud.api.service.integration.helper;
 
 import com.crud.api.dto.RequestMeasurementDTO;
+import com.crud.api.dto.RequestUserActivityDTO;
 import com.crud.api.dto.RequestUserDTO;
 import com.crud.api.entity.Measurement;
 import com.crud.api.entity.User;
@@ -49,6 +50,12 @@ public class TestEntityFactory {
         dto.setGender(gender);
         dto.setActivity(activity);
         dto.setAge(age);
+        return dto;
+    }
+
+    public static RequestUserActivityDTO createRequestUserActivityDTO(Activity activity) {
+        RequestUserActivityDTO dto = new RequestUserActivityDTO();
+        dto.setActivity(activity);
         return dto;
     }
 }
