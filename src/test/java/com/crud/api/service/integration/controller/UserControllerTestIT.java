@@ -329,7 +329,6 @@ public class UserControllerTestIT extends AppMySQLContainer {
         User user = users.get(0);
         RequestUserActivityDTO requestUserActivityDTO = TestEntityFactory.createRequestUserActivityDTO(Activity.SEDENTARY);
         mockMvc.perform(patch("/users/{id}", user.getId())
-
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(requestUserActivityDTO)))
                 .andDo(print())
@@ -337,6 +336,26 @@ public class UserControllerTestIT extends AppMySQLContainer {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.activity").value("SEDENTARY"))
                 .andExpect(jsonPath("$.id").value(user.getId()));
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    public void shouldThrowExceptionWhenUpdateActivity() throws Exception {
+        int userId = 10;
+        RequestUserActivityDTO requestUserActivityDTO = TestEntityFactory.createRequestUserActivityDTO(Activity.EXTRA_ACTIVE);
+        MvcResult result = mockMvc.perform(patch("/users/{id}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(requestUserActivityDTO)))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.id").doesNotExist())
+                .andReturn();
+
+        String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
+        Assertions.assertTrue(result.getResolvedException() instanceof UserNotFoundException);
+        Assertions.assertEquals(String.format("User with id: %s not found", userId), errorMessage);
+        Assertions.assertTrue(userRepository.findById((long) userId).isEmpty());
     }
 
     private List<User> prepareData(int numberOfUsers) {
