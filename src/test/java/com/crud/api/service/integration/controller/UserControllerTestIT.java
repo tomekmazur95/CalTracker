@@ -304,6 +304,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
         requestUserDTO.setHeight(height);
 
         User userBeforeUpdate = userRepository.findById(userId).orElseThrow();
+        Assertions.assertNotEquals(requestUserDTO.getUserName(), userBeforeUpdate.getUserName());
         Assertions.assertEquals(users.get(0).getAge(), userBeforeUpdate.getAge());
 
         mockMvc.perform(put("/users/{id}", userId)
@@ -356,6 +357,21 @@ public class UserControllerTestIT extends AppMySQLContainer {
         Assertions.assertTrue(result.getResolvedException() instanceof UserNotFoundException);
         Assertions.assertEquals(String.format("User with id: %s not found", userId), errorMessage);
         Assertions.assertTrue(userRepository.findById((long) userId).isEmpty());
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    public void shouldDeleteUser() throws Exception {
+        List<User> users = prepareData(1);
+        User user = users.get(0);
+
+        mockMvc.perform(delete("/users/{id}", user.getId()))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isNoContent());
+
+        Assertions.assertTrue(userRepository.findById(user.getId()).isEmpty());
+        Assertions.assertTrue(measurementRepository.findAllByUserId(user.getId()).isEmpty());
     }
 
     private List<User> prepareData(int numberOfUsers) {
