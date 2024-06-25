@@ -374,6 +374,24 @@ public class UserControllerTestIT extends AppMySQLContainer {
         Assertions.assertTrue(measurementRepository.findAllByUserId(user.getId()).isEmpty());
     }
 
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    public void shouldThrowExceptionWhenDeleteUser() throws Exception {
+        int userId = 15;
+
+        MvcResult result = mockMvc.perform(delete("/users/{id}", userId))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
+        Assertions.assertTrue(result.getResolvedException() instanceof UserNotFoundException);
+        Assertions.assertEquals(String.format("User with id: %s not found", userId), errorMessage);
+        Assertions.assertTrue(measurementRepository.findAllByUserId((long)userId).isEmpty());
+        Assertions.assertTrue(userRepository.findById((long) userId).isEmpty());
+    }
+
     private List<User> prepareData(int numberOfUsers) {
         List<User> userList = new ArrayList<>();
         for (int i = 0; i < numberOfUsers; i++) {
