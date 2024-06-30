@@ -1,5 +1,6 @@
 package com.crud.api.service.integration.helper;
 
+import com.crud.api.dto.RegisterRequest;
 import com.crud.api.dto.RequestMeasurementDTO;
 import com.crud.api.dto.RequestUserActivityDTO;
 import com.crud.api.dto.RequestUserDTO;
@@ -56,6 +57,13 @@ public class TestEntityFactory {
     public static RequestUserActivityDTO createRequestUserActivityDTO(Activity activity) {
         RequestUserActivityDTO dto = new RequestUserActivityDTO();
         dto.setActivity(activity);
+        return dto;
+    }
+
+    public static RegisterRequest createRegisterRequest(String email, String password) {
+        RegisterRequest dto = new RegisterRequest();
+        dto.setEmail(email);
+        dto.setPassword(password);
         return dto;
     }
 }
