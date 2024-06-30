@@ -18,6 +18,7 @@ import com.crud.api.repository.UserRepository;
 import com.crud.api.service.integration.AppMySQLContainer;
 import com.crud.api.service.integration.DatabaseSetupExtension;
 import com.crud.api.service.integration.helper.TestEntityFactory;
+import com.crud.api.service.integration.helper.TestJsonMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,8 +31,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +82,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
         mockMvc.perform(post("/users/{userInfoId}", userInfo.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(userDTO)))
+                        .content(TestJsonMapper.asJsonString(userDTO)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
@@ -107,7 +106,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
         MvcResult result = mockMvc.perform(post("/users/{userInfoId}", userInfo.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(requestUserDTO)))
+                        .content(TestJsonMapper.asJsonString(requestUserDTO)))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().isBadRequest())
                 .andReturn();
@@ -142,7 +141,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
         MvcResult result = mockMvc.perform(post("/users/{userInfoId}", userInfo.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(requestUserDTO)))
+                        .content(TestJsonMapper.asJsonString(requestUserDTO)))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().isConflict())
@@ -163,7 +162,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
         MvcResult result = mockMvc.perform(post("/users/{userInfoId}", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(requestUserDTO)))
+                        .content(TestJsonMapper.asJsonString(requestUserDTO)))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().isNotFound())
@@ -284,7 +283,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
         MvcResult result = mockMvc.perform(put("/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(userDTO)))
+                        .content(TestJsonMapper.asJsonString(userDTO)))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().isNotFound())
@@ -309,7 +308,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
 
         mockMvc.perform(put("/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(requestUserDTO)))
+                        .content(TestJsonMapper.asJsonString(requestUserDTO)))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(status().isOk())
@@ -331,7 +330,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
         RequestUserActivityDTO requestUserActivityDTO = TestEntityFactory.createRequestUserActivityDTO(Activity.SEDENTARY);
         mockMvc.perform(patch("/users/{id}", user.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(requestUserActivityDTO)))
+                        .content(TestJsonMapper.asJsonString(requestUserActivityDTO)))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(status().isOk())
@@ -346,7 +345,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
         RequestUserActivityDTO requestUserActivityDTO = TestEntityFactory.createRequestUserActivityDTO(Activity.EXTRA_ACTIVE);
         MvcResult result = mockMvc.perform(patch("/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(requestUserActivityDTO)))
+                        .content(TestJsonMapper.asJsonString(requestUserActivityDTO)))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().isNotFound())
@@ -374,6 +373,24 @@ public class UserControllerTestIT extends AppMySQLContainer {
         Assertions.assertTrue(measurementRepository.findAllByUserId(user.getId()).isEmpty());
     }
 
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    public void shouldThrowExceptionWhenDeleteUser() throws Exception {
+        int userId = 15;
+
+        MvcResult result = mockMvc.perform(delete("/users/{id}", userId))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
+        Assertions.assertTrue(result.getResolvedException() instanceof UserNotFoundException);
+        Assertions.assertEquals(String.format("User with id: %s not found", userId), errorMessage);
+        Assertions.assertTrue(measurementRepository.findAllByUserId((long) userId).isEmpty());
+        Assertions.assertTrue(userRepository.findById((long) userId).isEmpty());
+    }
+
     private List<User> prepareData(int numberOfUsers) {
         List<User> userList = new ArrayList<>();
         for (int i = 0; i < numberOfUsers; i++) {
@@ -398,14 +415,6 @@ public class UserControllerTestIT extends AppMySQLContainer {
             userList.add(userDomain);
         }
         return userList;
-    }
-
-    private String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
 
