@@ -1,9 +1,6 @@
 package com.crud.api.service.integration.helper;
 
-import com.crud.api.dto.RegisterRequest;
-import com.crud.api.dto.RequestMeasurementDTO;
-import com.crud.api.dto.RequestUserActivityDTO;
-import com.crud.api.dto.RequestUserDTO;
+import com.crud.api.dto.*;
 import com.crud.api.entity.Measurement;
 import com.crud.api.entity.User;
 import com.crud.api.entity.UserInfo;
@@ -62,6 +59,13 @@ public class TestEntityFactory {
 
     public static RegisterRequest createRegisterRequest(String email, String password) {
         RegisterRequest dto = new RegisterRequest();
+        dto.setEmail(email);
+        dto.setPassword(password);
+        return dto;
+    }
+
+    public static AuthenticationRequest createAuthenticationRequest(String email, String password) {
+        AuthenticationRequest dto = new AuthenticationRequest();
         dto.setEmail(email);
         dto.setPassword(password);
         return dto;

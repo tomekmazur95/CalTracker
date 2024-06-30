@@ -3,6 +3,7 @@ package com.crud.api.service;
 import com.crud.api.dto.UserInfoResponse;
 import com.crud.api.entity.UserInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ public class UserInfoService {
                     .email(principal.getEmail())
                     .build();
         }
-        return null;
+        else {
+            throw new AuthenticationCredentialsNotFoundException("Authentication token not found");
+        }
     }
 }
