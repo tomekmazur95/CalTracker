@@ -3,6 +3,7 @@ package com.crud.api.service.integration.controller;
 
 import com.crud.api.dto.RequestMeasurementDTO;
 import com.crud.api.repository.UserInfoRepository;
+import com.crud.api.repository.UserRepository;
 import com.crud.api.service.integration.AppMySQLContainer;
 import com.crud.api.service.integration.DatabaseSetupExtension;
 import com.crud.api.service.integration.helper.TestJsonMapper;
@@ -35,19 +36,22 @@ public class MeasurementControllerTestIT extends AppMySQLContainer {
     @Autowired
     private MockMvc mockMvc;
 
-
     @Autowired
     private UserInfoRepository userInfoRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @AfterEach
     public void clean() {
+        userRepository.deleteAll();
         userInfoRepository.deleteAll();
     }
 
 
     @Test
     void shouldThrowForbiddenExceptionWhenUserIsUnauthorized() throws Exception {
-        int userId = 1;
+        long userId = 1;
         MvcResult result = mockMvc.perform(post("/user/{userId}/measurements", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestJsonMapper.asJsonString(new RequestMeasurementDTO())))
@@ -63,7 +67,7 @@ public class MeasurementControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     void shouldThrowUserNotFoundExceptionWhenCreateMeasurement() throws Exception {
-        int userId = 1;
+        long userId = 1;
         MvcResult result = mockMvc.perform(post("/user/{userId}/measurements", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestJsonMapper.asJsonString(new RequestMeasurementDTO())))
@@ -75,6 +79,7 @@ public class MeasurementControllerTestIT extends AppMySQLContainer {
         int status = result.getResponse().getStatus();
         String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
         Assertions.assertEquals(String.format("User with id: %s not found", userId), errorMessage);
+        Assertions.assertTrue(userRepository.findById(userId).isEmpty());
         Assertions.assertEquals(404, status);
     }
 }
