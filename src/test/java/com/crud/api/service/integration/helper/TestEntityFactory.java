@@ -70,4 +70,12 @@ public class TestEntityFactory {
         dto.setPassword(password);
         return dto;
     }
+
+    public static Measurement createMeasurementDomain(MeasureType measureType, Double value, Unit unit) {
+        Measurement domain = new Measurement();
+        domain.setType(measureType);
+        domain.setValue(value);
+        domain.setUnit(unit);
+        return domain;
+    }
 }
