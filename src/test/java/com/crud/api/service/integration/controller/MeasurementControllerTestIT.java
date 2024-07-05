@@ -116,4 +116,25 @@ public class MeasurementControllerTestIT extends AppMySQLContainer {
 
         Assertions.assertTrue(measurementRepository.existsByUserId(userId));
     }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void shouldThrowExceptionWhenUserNotExists() throws Exception {
+        long userId = 7L;
+        RequestMeasurementDTO requestMeasurementDTO = TestEntityFactory.createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
+
+        MvcResult result = mockMvc.perform(post("/user/{userId}/measurements", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestJsonMapper.asJsonString(requestMeasurementDTO)))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+
+        String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
+        Assertions.assertEquals(String.format("User with id: %s not found", userId), errorMessage);
+        Assertions.assertTrue(userRepository.findById(userId).isEmpty());
+        Assertions.assertFalse(measurementRepository.existsByUserId(userId));
+    }
 }
