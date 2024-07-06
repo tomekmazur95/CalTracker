@@ -164,7 +164,7 @@ public class MeasurementControllerTestIT extends AppMySQLContainer {
 
     @Test
     @WithMockUser(authorities = {"USER"})
-    void shouldReturnMeasurementList() throws Exception {
+    void shouldReturnMeasurementListSortedById() throws Exception {
         UserInfo userInfoDomain = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password123");
         userInfoRepository.save(userInfoDomain);
         User userDomain = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
@@ -181,6 +181,38 @@ public class MeasurementControllerTestIT extends AppMySQLContainer {
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2));
+                .andExpect(jsonPath("$.size()").value(2))
+                .andExpect(jsonPath("$[0].id").value(height.getId()))
+                .andExpect(jsonPath("$[1].id").value(weight.getId()));
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void shouldReturnLastMeasurement() throws Exception {
+        UserInfo userInfoDomain = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password123");
+        userInfoRepository.save(userInfoDomain);
+        User userDomain = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
+        userDomain.setUserInfo(userInfoDomain);
+        userRepository.save(userDomain);
+        Measurement height = TestEntityFactory.createHeight(183.0);
+        height.setUser(userDomain);
+        Measurement weight = TestEntityFactory.createMeasurementDomain(MeasureType.WEIGHT, 100D, Unit.KILOGRAMS);
+        weight.setUser(userDomain);
+        Measurement lastWeight = TestEntityFactory.createMeasurementDomain(MeasureType.WEIGHT, 98D, Unit.KILOGRAMS);
+        lastWeight.setUser(userDomain);
+        measurementRepository.saveAll(List.of(height, weight, lastWeight));
+
+
+        long userId = userDomain.getId();
+        mockMvc.perform(get("/user/{userId}/measurements/last", userId)
+                        .param("measureType", MeasureType.WEIGHT.name()))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(lastWeight.getId()))
+                .andExpect(jsonPath("$.value").value(lastWeight.getValue()))
+                .andExpect(jsonPath("$.unit").value(Unit.KILOGRAMS.name()));
+
+        Assertions.assertEquals(3, measurementRepository.findAllByUserId(userId).size());
     }
 }
