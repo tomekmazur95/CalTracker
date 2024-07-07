@@ -215,4 +215,20 @@ public class MeasurementControllerTestIT extends AppMySQLContainer {
 
         Assertions.assertEquals(3, measurementRepository.findAllByUserId(userId).size());
     }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void shouldThrowExceptionWhenLastMeasurementNotFound() throws Exception {
+        long userId = 5L;
+        MvcResult result = mockMvc.perform(get("/user/{userId}/measurements/last", userId)
+                        .param("measureType", MeasureType.HEIGHT.name()))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
+        Assertions.assertEquals(String.format("Measurement Type: %s not found for User with id %s", MeasureType.HEIGHT.name(), userId), errorMessage);
+        Assertions.assertFalse(measurementRepository.existsByUserId(userId));
+    }
 }
