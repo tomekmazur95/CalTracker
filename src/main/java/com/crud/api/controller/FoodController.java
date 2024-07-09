@@ -12,16 +12,17 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/foods")
 public class FoodController {
 
     private final FoodService foodService;
 
-    @PostMapping("/foods")
-    public ResponseEntity<ResponseFoodDTO> createFood(@RequestBody RequestFoodDTO dto, @RequestParam("userId") Long userId) {
+    @PostMapping()
+    public ResponseEntity<ResponseFoodDTO> createFood(@RequestBody RequestFoodDTO dto, @RequestParam Long userId) {
         return new ResponseEntity<>(foodService.createFood(dto, userId), HttpStatus.OK);
     }
 
-    @GetMapping("/foods")
+    @GetMapping()
     public ResponseEntity<List<ResponseFoodDTO>> findUserFoods(@RequestParam Long userId) {
         return new ResponseEntity<>(foodService.findUserFoods(userId), HttpStatus.OK);
     }

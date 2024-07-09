@@ -28,7 +28,8 @@ public class FoodService {
     private final ResponseFoodMapper responseFoodMapper;
 
     public ResponseFoodDTO createFood(RequestFoodDTO dto, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND, userId)));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND, userId)));
         Food foodDomain = requestFoodMapper.toDomain(dto);
         foodDomain.setUser(user);
         foodFactRepository.save(foodDomain.getFoodFact());
