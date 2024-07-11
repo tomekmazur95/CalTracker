@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Objects;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -102,7 +103,7 @@ public class FoodControllerTestIT extends AppMySQLContainer {
     }
 
     @Test
-    @WithMockUser()
+    @WithMockUser(authorities = {"USER"})
     void shouldCreateFood() throws Exception {
         UserInfo userInfoDomain = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password123");
         userInfoRepository.save(userInfoDomain);
@@ -129,5 +130,22 @@ public class FoodControllerTestIT extends AppMySQLContainer {
                 .andExpect(jsonPath("$.responseFoodFactDTO.carbohydrate").value(2.0));
 
         Assertions.assertFalse(foodRepository.findAllByUserId(userDomain.getId()).isEmpty());
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void shouldThrowExceptionWhenUserNotExists() throws Exception {
+        long userId = 7L;
+
+        MvcResult result = mockMvc.perform(get("/foods")
+                        .param("userId", String.valueOf(userId)))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
+        Assertions.assertEquals(String.format("User with id: %s not found", userId), errorMessage);
+        Assertions.assertTrue(userRepository.findById(userId).isEmpty());
     }
 }
