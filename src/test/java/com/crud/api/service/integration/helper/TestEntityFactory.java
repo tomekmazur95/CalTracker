@@ -1,9 +1,7 @@
 package com.crud.api.service.integration.helper;
 
 import com.crud.api.dto.*;
-import com.crud.api.entity.Measurement;
-import com.crud.api.entity.User;
-import com.crud.api.entity.UserInfo;
+import com.crud.api.entity.*;
 import com.crud.api.enums.*;
 
 public class TestEntityFactory {
@@ -76,6 +74,42 @@ public class TestEntityFactory {
         domain.setType(measureType);
         domain.setValue(value);
         domain.setUnit(unit);
+        return domain;
+    }
+
+    public static RequestFoodFactDTO createRequestFoodFactDTO(Double value, Double calories, Double fat, Double carbo, Double protein) {
+        RequestFoodFactDTO dto = new RequestFoodFactDTO();
+        dto.setUnit(Unit.GRAMS);
+        dto.setValue(value);
+        dto.setCalories(calories);
+        dto.setFat(fat);
+        dto.setCarbohydrate(carbo);
+        dto.setProtein(protein);
+        return dto;
+    }
+
+    public static RequestFoodDTO createRequestFoodDTO(String name, String description) {
+        RequestFoodDTO dto = new RequestFoodDTO();
+        dto.setName(name);
+        dto.setDescription(description);
+        return dto;
+    }
+
+    public static Food createFood(String name, String description) {
+        Food domain = new Food();
+        domain.setName(name);
+        domain.setDescription(description);
+        return domain;
+    }
+
+    public static FoodFact createFoodFact(Double value, Double calories, Double fat, Double carbo, Double protein) {
+        FoodFact domain = new FoodFact();
+        domain.setUnit(Unit.GRAMS);
+        domain.setValue(value);
+        domain.setCalories(calories);
+        domain.setFat(fat);
+        domain.setCarbohydrate(carbo);
+        domain.setProtein(protein);
         return domain;
     }
 }
