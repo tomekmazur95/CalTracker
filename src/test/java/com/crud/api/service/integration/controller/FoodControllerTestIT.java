@@ -3,6 +3,8 @@ package com.crud.api.service.integration.controller;
 
 import com.crud.api.dto.RequestFoodDTO;
 import com.crud.api.dto.RequestFoodFactDTO;
+import com.crud.api.entity.Food;
+import com.crud.api.entity.FoodFact;
 import com.crud.api.entity.User;
 import com.crud.api.entity.UserInfo;
 import com.crud.api.enums.Activity;
@@ -147,5 +149,29 @@ public class FoodControllerTestIT extends AppMySQLContainer {
         String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
         Assertions.assertEquals(String.format("User with id: %s not found", userId), errorMessage);
         Assertions.assertTrue(userRepository.findById(userId).isEmpty());
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void shouldReturnFoodList() throws Exception {
+        UserInfo userInfoDomain = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password123");
+        userInfoRepository.save(userInfoDomain);
+        User userDomain = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
+        userDomain.setUserInfo(userInfoDomain);
+        userRepository.save(userDomain);
+        Food foodDomain = TestEntityFactory.createFood("cottage cheese", "cottage cheese - description");
+        FoodFact foodFactDomain = TestEntityFactory.createFoodFact(100.0, 97.0, 5.0, 2.0, 11.0);
+        foodDomain.setFoodFact(foodFactDomain);
+        foodDomain.setUser(userDomain);
+        foodFactRepository.save(foodFactDomain);
+        foodRepository.save(foodDomain);
+
+        mockMvc.perform(get("/foods")
+                .param("userId", String.valueOf(userDomain.getId())))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].id").value(foodDomain.getId()))
+                .andExpect(jsonPath("$[0].responseFoodFactDTO.id").value(foodFactDomain.getId()));
     }
 }

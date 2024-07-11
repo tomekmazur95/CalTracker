@@ -1,9 +1,7 @@
 package com.crud.api.service.integration.helper;
 
 import com.crud.api.dto.*;
-import com.crud.api.entity.Measurement;
-import com.crud.api.entity.User;
-import com.crud.api.entity.UserInfo;
+import com.crud.api.entity.*;
 import com.crud.api.enums.*;
 
 public class TestEntityFactory {
@@ -95,5 +93,23 @@ public class TestEntityFactory {
         dto.setName(name);
         dto.setDescription(description);
         return dto;
+    }
+
+    public static Food createFood(String name, String description) {
+        Food domain = new Food();
+        domain.setName(name);
+        domain.setDescription(description);
+        return domain;
+    }
+
+    public static FoodFact createFoodFact(Double value, Double calories, Double fat, Double carbo, Double protein) {
+        FoodFact domain = new FoodFact();
+        domain.setUnit(Unit.GRAMS);
+        domain.setValue(value);
+        domain.setCalories(calories);
+        domain.setFat(fat);
+        domain.setCarbohydrate(carbo);
+        domain.setProtein(protein);
+        return domain;
     }
 }
