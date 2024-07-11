@@ -78,4 +78,22 @@ public class TestEntityFactory {
         domain.setUnit(unit);
         return domain;
     }
+
+    public static RequestFoodFactDTO createRequestFoodFactDTO(Double value, Double calories, Double fat, Double carbo, Double protein) {
+        RequestFoodFactDTO dto = new RequestFoodFactDTO();
+        dto.setUnit(Unit.GRAMS);
+        dto.setValue(value);
+        dto.setCalories(calories);
+        dto.setFat(fat);
+        dto.setCarbohydrate(carbo);
+        dto.setProtein(protein);
+        return dto;
+    }
+
+    public static RequestFoodDTO createRequestFoodDTO(String name, String description) {
+        RequestFoodDTO dto = new RequestFoodDTO();
+        dto.setName(name);
+        dto.setDescription(description);
+        return dto;
+    }
 }
