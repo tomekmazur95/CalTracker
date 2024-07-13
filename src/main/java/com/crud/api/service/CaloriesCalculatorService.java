@@ -25,12 +25,12 @@ import org.springframework.stereotype.Service;
 
 import static com.crud.api.util.ConstantsUtils.*;
 import static com.crud.api.util.GenderUtils.*;
+import static com.crud.api.util.GoalUtils.DEFICIT;
+import static com.crud.api.util.GoalUtils.SURPLUS;
 
 @Service
 @RequiredArgsConstructor
 public class CaloriesCalculatorService {
-    private static final float SURPLUS = 0.2f;
-    private static final float DEFICIT = 0.2f;
 
     private final UserRepository userRepository;
     private final MeasurementRepository measurementRepository;
