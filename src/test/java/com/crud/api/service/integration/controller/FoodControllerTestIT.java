@@ -131,6 +131,15 @@ public class FoodControllerTestIT extends AppMySQLContainer {
                 .andExpect(jsonPath("$.responseFoodFactDTO.value").value(100))
                 .andExpect(jsonPath("$.responseFoodFactDTO.carbohydrate").value(2.0));
 
+        mockMvc.perform(get("/foods")
+                        .param("userId", String.valueOf(userDomain.getId())))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].name").value(requestFoodDTO.getName()))
+                .andExpect(jsonPath("$[0].responseFoodFactDTO.calories").value(requestFoodDTO.getRequestFoodFactDTO().getCalories()));
+
         Assertions.assertFalse(foodRepository.findAllByUserId(userDomain.getId()).isEmpty());
     }
 
@@ -167,7 +176,7 @@ public class FoodControllerTestIT extends AppMySQLContainer {
         foodRepository.save(foodDomain);
 
         mockMvc.perform(get("/foods")
-                .param("userId", String.valueOf(userDomain.getId())))
+                        .param("userId", String.valueOf(userDomain.getId())))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1))
