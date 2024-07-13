@@ -180,7 +180,8 @@ public class FoodControllerTestIT extends AppMySQLContainer {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1))
                 .andExpect(jsonPath("$[0].id").value(foodDomain.getId()))
-                .andExpect(jsonPath("$[0].responseFoodFactDTO.id").value(foodFactDomain.getId()));
+                .andExpect(jsonPath("$[0].responseFoodFactDTO.id").value(foodFactDomain.getId()))
+                .andExpect(jsonPath("$[1]").doesNotExist());
     }
 
     @Test

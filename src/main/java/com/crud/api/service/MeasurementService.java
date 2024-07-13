@@ -17,13 +17,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import static com.crud.api.util.ConstantsUtils.*;
+
 @Service
 @RequiredArgsConstructor
 public class MeasurementService {
-
-    private static final String USER_NOT_FOUND = "User with id: %s not found";
-    private static final String ID = "id";
-    private static final String MEASUREMENT_NOT_FOUND = "Measurement Type: %s not found for User with id %s";
 
     private final RequestMeasurementMapper requestMeasurementMapper;
     private final ResponseMeasurementMapper responseMeasurementMapper;
@@ -58,7 +56,7 @@ public class MeasurementService {
             .map(responseMeasurementMapper::fromDomain).toList();
 
         if (list.isEmpty()) {
-            throw new MeasurementNotFoundException(String.format(MEASUREMENT_NOT_FOUND, measureType,userId));
+            throw new MeasurementNotFoundException(String.format(MEASUREMENT_TYPE_NOT_FOUND, measureType,userId));
         }
         return list.get(0);
     }
