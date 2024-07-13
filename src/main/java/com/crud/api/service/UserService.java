@@ -29,13 +29,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.crud.api.util.ConstantsUtils.*;
+
 @RequiredArgsConstructor
 @Service
 public class UserService {
-
-    private static final String USER_NOT_FOUND = "User with id: %s not found";
-    private static final String USER_INFO_ID_NOT_FOUND = "User with user info id: %s not found";
-    private static final String USER_ALREADY_EXISTS = "User with user info id: %s already exists";
 
     private static final String DATE = "Date";
 
@@ -54,7 +52,7 @@ public class UserService {
             throw new IllegalArgumentException("The given fields must not be null");
         }
         if (userRepository.existsByUserInfoId(userInfoId)) {
-            throw new UserAlreadyExistsException(String.format(USER_ALREADY_EXISTS, userInfoId));
+            throw new UserAlreadyExistsException(String.format(USER_INFO_ALREADY_EXISTS, userInfoId));
         }
 
         UserInfo userInfo = userInfoRepository.findById(userInfoId)

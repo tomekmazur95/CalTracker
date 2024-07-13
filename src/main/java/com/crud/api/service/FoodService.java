@@ -15,11 +15,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.crud.api.util.ConstantsUtils.USER_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class FoodService {
-
-    private static final String USER_NOT_FOUND = "User with id: %s not found";
 
     private final FoodRepository foodRepository;
     private final UserRepository userRepository;

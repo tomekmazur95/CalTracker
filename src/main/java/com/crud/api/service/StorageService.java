@@ -14,12 +14,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+import static com.crud.api.util.ConstantsUtils.FILE_NOT_FOUND;
+import static com.crud.api.util.ConstantsUtils.USER_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class StorageService {
 
-    private static final String USER_NOT_FOUND = "User with id: %s not found";
-    private static final String FILE_NOT_FOUND = "File for user id: %s not found";
 
     private final StorageRepository storageRepository;
     private final UserRepository userRepository;

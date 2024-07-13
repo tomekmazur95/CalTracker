@@ -23,11 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.crud.api.util.ConstantsUtils.FOOD_NOT_FOUND;
+import static com.crud.api.util.ConstantsUtils.USER_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class MealService {
-    private static final String USER_NOT_FOUND = "User with id: %s not found";
-    private static final String FOOD_NOT_FOUND = "Food with id: %s not found";
 
     private final FoodRepository foodRepository;
     private final MealRepository mealRepository;

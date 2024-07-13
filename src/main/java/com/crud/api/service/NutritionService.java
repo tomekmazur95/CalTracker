@@ -4,7 +4,6 @@ import com.crud.api.dto.RequestNutritionDTO;
 import com.crud.api.dto.ResponseNutritionDTO;
 import com.crud.api.entity.Measurement;
 import com.crud.api.entity.Nutrition;
-import com.crud.api.enums.MacroElement;
 import com.crud.api.error.MeasurementNotFoundException;
 import com.crud.api.error.NutritionNotFoundException;
 import com.crud.api.mapper.RequestNutritionMapper;
@@ -18,19 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.crud.api.util.ConstantsUtils.MEASUREMENT_ID_NOT_FOUND;
+import static com.crud.api.util.ConstantsUtils.NUTRITION_ID_NOT_FOUND;
+import static com.crud.api.util.NutritionUtils.*;
+
 @Service
 @RequiredArgsConstructor
 public class NutritionService {
-
-
-    private static final String NUTRITION_NOT_FOUND = "Nutrition with id: %s not found";
-    private static final String MEASUREMENT_NOT_FOUND = "Measurement with id: %s not found";
-    public static final double CARBS_DEFAULT_PERCENTAGE = MacroElement.CARBOHYDRATE.getDefaultPercentage();
-    public static final double FAT_DEFAULT_PERCENTAGE = MacroElement.FAT.getDefaultPercentage();
-    public static final double PROTEIN_DEFAULT_PERCENTAGE = MacroElement.PROTEIN.getDefaultPercentage();
-    public static final double CARBS_PER_GRAM = MacroElement.CARBOHYDRATE.getCaloriePerGram();
-    public static final double FAT_PER_GRAM = MacroElement.FAT.getCaloriePerGram();
-    public static final double PROTEIN_PER_GRAM = MacroElement.PROTEIN.getCaloriePerGram();
 
     private final NutritionRepository nutritionRepository;
     private final ResponseNutritionMapper responseNutritionMapper;
@@ -48,10 +41,10 @@ public class NutritionService {
     @Transactional
     public ResponseNutritionDTO updateNutritions(RequestNutritionDTO requestNutritionDTO, Long nutritionId) {
         Nutrition domain = nutritionRepository.findById(nutritionId)
-                .orElseThrow(() -> new NutritionNotFoundException(String.format(NUTRITION_NOT_FOUND, nutritionId)));
+                .orElseThrow(() -> new NutritionNotFoundException(String.format(NUTRITION_ID_NOT_FOUND, nutritionId)));
         Long goalID = domain.getMeasurement().getId();
         Measurement goal = measurementRepository.findById(goalID)
-                .orElseThrow(() -> new MeasurementNotFoundException(String.format(MEASUREMENT_NOT_FOUND, goalID)));
+                .orElseThrow(() -> new MeasurementNotFoundException(String.format(MEASUREMENT_ID_NOT_FOUND, goalID)));
 
         Map<String, Long> nutritionsMap = calculateNutritions(goal, requestNutritionDTO.getCarbs(), requestNutritionDTO.getFat(), requestNutritionDTO.getProtein());
         requestNutritionMapper.editableToDomain(requestNutritionDTO, domain, nutritionsMap);

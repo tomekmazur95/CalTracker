@@ -23,15 +23,11 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.crud.api.util.ConstantsUtils.*;
+
 @Service
 @RequiredArgsConstructor
 public class GoalsService {
-
-    private static final String USER_NOT_FOUND = "User with id: %s not found";
-    private static final String MEASUREMENT_NOT_FOUND = "Measurement Type: %s not found for User with id %s";
-    private static final String NUTRITION_NOT_FOUND = "Nutrition not found for Measurement with id %s";
-    private static final String ENERGY_GOAL = "ENERGY GOAL";
-
 
     private final UserRepository userRepository;
     private final MeasurementRepository measurementRepository;
@@ -68,7 +64,7 @@ public class GoalsService {
             .toList();
 
         if (list.isEmpty()) {
-            throw new MeasurementNotFoundException(String.format(MEASUREMENT_NOT_FOUND, MeasureType.CURRENT_WEIGHT, userId));
+            throw new MeasurementNotFoundException(String.format(MEASUREMENT_TYPE_NOT_FOUND, MeasureType.CURRENT_WEIGHT, userId));
         }
         return list.get(0);
     }
@@ -82,7 +78,7 @@ public class GoalsService {
             .sorted(Comparator.comparing(Measurement::getId).reversed())
             .toList();
         if (listOfGoals.isEmpty()) {
-            throw new MeasurementNotFoundException(String.format(MEASUREMENT_NOT_FOUND, ENERGY_GOAL, userId));
+            throw new MeasurementNotFoundException(String.format(MEASUREMENT_TYPE_NOT_FOUND, ENERGY_GOAL, userId));
         }
         return listOfGoals.get(0);
     }

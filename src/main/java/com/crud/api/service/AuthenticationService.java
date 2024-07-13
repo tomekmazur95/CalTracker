@@ -14,12 +14,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import static com.crud.api.util.ConstantsUtils.USER_ALREADY_EXISTS;
+import static com.crud.api.util.ConstantsUtils.USER_EMAIL_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-
-    private static final String USER_ALREADY_EXISTS = "User with email: %s already exists";
-    private static final String USER_NOT_FOUND = "User with email: %s not found";
 
     private final UserInfoRepository userInfoRepository;
     private final PasswordEncoder passwordEncoder;
@@ -50,7 +50,7 @@ public class AuthenticationService {
                 )
         );
         UserInfo userInfo = userInfoRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND, request.getEmail())));
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_EMAIL_NOT_FOUND, request.getEmail())));
         String jwtToken = jwtService.generateToken(userInfo);
         return AuthenticationResponse.builder()
                 .token(jwtToken)

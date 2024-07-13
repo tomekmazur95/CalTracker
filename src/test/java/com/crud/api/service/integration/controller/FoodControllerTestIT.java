@@ -35,8 +35,7 @@ import java.util.Objects;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -123,7 +122,7 @@ public class FoodControllerTestIT extends AppMySQLContainer {
                         .param("userId", String.valueOf(userDomain.getId())))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.name").value(requestFoodDTO.getName()))
                 .andExpect(jsonPath("$.description").value(requestFoodDTO.getDescription()))
@@ -131,12 +130,21 @@ public class FoodControllerTestIT extends AppMySQLContainer {
                 .andExpect(jsonPath("$.responseFoodFactDTO.value").value(100))
                 .andExpect(jsonPath("$.responseFoodFactDTO.carbohydrate").value(2.0));
 
+        mockMvc.perform(get("/foods")
+                        .param("userId", String.valueOf(userDomain.getId())))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].name").value(requestFoodDTO.getName()))
+                .andExpect(jsonPath("$[0].responseFoodFactDTO.calories").value(requestFoodDTO.getRequestFoodFactDTO().getCalories()));
+
         Assertions.assertFalse(foodRepository.findAllByUserId(userDomain.getId()).isEmpty());
     }
 
     @Test
     @WithMockUser(authorities = {"USER"})
-    void shouldThrowExceptionWhenUserNotExists() throws Exception {
+    void shouldThrowExceptionWhenUserNotExistsWhenFindUserFoods() throws Exception {
         long userId = 7L;
 
         MvcResult result = mockMvc.perform(get("/foods")
@@ -167,11 +175,31 @@ public class FoodControllerTestIT extends AppMySQLContainer {
         foodRepository.save(foodDomain);
 
         mockMvc.perform(get("/foods")
-                .param("userId", String.valueOf(userDomain.getId())))
+                        .param("userId", String.valueOf(userDomain.getId())))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1))
                 .andExpect(jsonPath("$[0].id").value(foodDomain.getId()))
-                .andExpect(jsonPath("$[0].responseFoodFactDTO.id").value(foodFactDomain.getId()));
+                .andExpect(jsonPath("$[0].responseFoodFactDTO.id").value(foodFactDomain.getId()))
+                .andExpect(jsonPath("$[1]").doesNotExist());
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void shouldReturnEmptyFoodList() throws Exception {
+        UserInfo userInfoDomain = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password123");
+        userInfoRepository.save(userInfoDomain);
+        User userDomain = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
+        userDomain.setUserInfo(userInfoDomain);
+        userRepository.save(userDomain);
+
+        mockMvc.perform(get("/foods")
+                        .param("userId", String.valueOf(userDomain.getId())))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isOk())
+                .andExpect(content().string("[]"));
+
+        Assertions.assertTrue(foodRepository.findAllByUserId(userDomain.getId()).isEmpty());
     }
 }

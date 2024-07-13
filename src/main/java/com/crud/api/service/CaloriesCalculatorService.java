@@ -23,27 +23,16 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import static com.crud.api.util.ConstantsUtils.*;
+import static com.crud.api.util.GenderUtils.*;
+
 @Service
 @RequiredArgsConstructor
 public class CaloriesCalculatorService {
-
-    private static final String USER_NOT_FOUND = "User with id: %s not found";
-    private static final String MEASUREMENT_NOT_FOUND = "Measurement not found";
-    private static final String MEASUREMENT_NOT_FOUND_USER = "Measurement Type: %s not found for User with id %s";
-
-    private static final double MALE_CONST_1 = 66;
-    private static final double MALE_CONST_W = 13.7;
-    private static final double MALE_CONST_H = 5;
-    private static final double MALE_CONST_A = 6.8;
-    private static final double FEMALE_CONST_1 = 655;
-    private static final double FEMALE_CONST_W = 9.6;
-    private static final double FEMALE_CONST_H = 1.8;
-    private static final double FEMALE_CONST_A = 4.7;
     private static final float SURPLUS = 0.2f;
     private static final float DEFICIT = 0.2f;
 
     private final UserRepository userRepository;
-
     private final MeasurementRepository measurementRepository;
     private final NutritionService nutritionService;
     private final ResponseMeasurementMapper responseMeasurementMapper;
@@ -84,7 +73,7 @@ public class CaloriesCalculatorService {
                 .toList();
 
         if (list.isEmpty()) {
-            throw new MeasurementNotFoundException(String.format(MEASUREMENT_NOT_FOUND_USER, MeasureType.CURRENT_WEIGHT, userId));
+            throw new MeasurementNotFoundException(String.format(MEASUREMENT_TYPE_NOT_FOUND, MeasureType.CURRENT_WEIGHT, userId));
         }
         return list.get(0);
     }

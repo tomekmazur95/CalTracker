@@ -19,7 +19,7 @@ public class FoodController {
 
     @PostMapping()
     public ResponseEntity<ResponseFoodDTO> createFood(@RequestBody RequestFoodDTO dto, @RequestParam Long userId) {
-        return new ResponseEntity<>(foodService.createFood(dto, userId), HttpStatus.OK);
+        return new ResponseEntity<>(foodService.createFood(dto, userId), HttpStatus.CREATED);
     }
 
     @GetMapping()
