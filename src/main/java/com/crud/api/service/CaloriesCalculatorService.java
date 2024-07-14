@@ -1,3 +1,4 @@
+/*
 package com.crud.api.service;
 
 import com.crud.api.dto.ResponseMeasurementDTO;
@@ -49,17 +50,25 @@ public class CaloriesCalculatorService {
 
     public UserGoalsResponseDTO calculateTdee(Long userId) {
 
-        /* fetch User from database */
+        */
+/* fetch User from database *//*
+
         User user = fetchUser(userId);
         Measurement currentWeight = fetchUserCurrentWeight(userId);
 
-        /* calculate BMR */
+        */
+/* calculate BMR *//*
+
         double bmr = calculateBasalMetabolicRate(user);
 
-        /* calculate tdee */
+        */
+/* calculate tdee *//*
+
         double tdee = calculateTotalDailyEnergyExpenditure(bmr, user.getActivity());
 
-        /* store User's TDEE in database */
+        */
+/* store User's TDEE in database *//*
+
         Measurement tdeeEntity = createTdeeEntity(tdee);
 
         return getUserGoalsResponseDTO(user, currentWeight, tdeeEntity);
@@ -80,13 +89,19 @@ public class CaloriesCalculatorService {
 
     private double calculateBasalMetabolicRate(User user) {
 
-        /* fetch User's necessary credentials */
+        */
+/* fetch User's necessary credentials *//*
+
         List<Measurement> measurementsList = fetchAllMeasurementsByUserId(user.getId());
 
-        /* fetch User's current weight */
+        */
+/* fetch User's current weight *//*
+
         Measurement userWeight = extractUserMeasurement(measurementsList, MeasureType.CURRENT_WEIGHT);
 
-        /* fetch User's height */
+        */
+/* fetch User's height *//*
+
         Measurement userHeight = extractUserMeasurement(measurementsList, MeasureType.HEIGHT);
 
         double weight = userWeight.getValue();
@@ -139,17 +154,25 @@ public class CaloriesCalculatorService {
 
     public UserGoalsResponseDTO calculateSurplus(Long userId) {
 
-        /* fetch User from database  */
+        */
+/* fetch User from database  *//*
+
         User user = fetchUser(userId);
         Measurement currentWeight = fetchUserCurrentWeight(userId);
 
-        /* fetch tdee */
+        */
+/* fetch tdee *//*
+
         double tdee = resolveLastUserTdee(user);
 
-        /* calculate surplus */
+        */
+/* calculate surplus *//*
+
         double surplus = tdee + tdee * SURPLUS;
 
-        /* store user's surplus in database */
+        */
+/* store user's surplus in database *//*
+
         Measurement surplusEntity = createSurplusEntity(surplus);
 
         return getUserGoalsResponseDTO(user, currentWeight, surplusEntity);
@@ -167,17 +190,25 @@ public class CaloriesCalculatorService {
 
     public UserGoalsResponseDTO calculateDeficit(Long userId) {
 
-        /*  fetch User from database  */
+        */
+/*  fetch User from database  *//*
+
         User user = fetchUser(userId);
         Measurement currentWeight = fetchUserCurrentWeight(userId);
 
-        /* fetch tdee */
+        */
+/* fetch tdee *//*
+
         double tdee = resolveLastUserTdee(user);
 
-        /* calculate deficit */
+        */
+/* calculate deficit *//*
+
         double deficit = tdee - tdee * DEFICIT;
 
-        /* store user's deficit in database */
+        */
+/* store user's deficit in database *//*
+
         Measurement deficitEntity = createDeficitEntity(deficit);
 
         return getUserGoalsResponseDTO(user, currentWeight, deficitEntity);
@@ -192,13 +223,19 @@ public class CaloriesCalculatorService {
         double tdee;
         if (lastUserTdee.isEmpty()) {
 
-            /* calculate BMR */
+            */
+/* calculate BMR *//*
+
             double bmr = calculateBasalMetabolicRate(user);
 
-            /* calculate tdee */
+            */
+/* calculate tdee *//*
+
             tdee = calculateTotalDailyEnergyExpenditure(bmr, user.getActivity());
 
-            /* store User's TDEE in database */
+            */
+/* store User's TDEE in database *//*
+
             Measurement tdeeEntity = createTdeeEntity(tdee);
             tdeeEntity.setUser(user);
             measurementRepository.save(tdeeEntity);
@@ -246,4 +283,4 @@ public class CaloriesCalculatorService {
                 .nutrition(nutrition)
                 .build();
     }
-}
+}*/
