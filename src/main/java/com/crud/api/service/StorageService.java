@@ -21,7 +21,6 @@ import static com.crud.api.util.ConstantsUtils.USER_NOT_FOUND;
 @RequiredArgsConstructor
 public class StorageService {
 
-
     private final StorageRepository storageRepository;
     private final UserRepository userRepository;
 
