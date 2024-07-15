@@ -112,4 +112,12 @@ public class TestEntityFactory {
         domain.setProtein(protein);
         return domain;
     }
+
+    public static RequestNutritionDTO createRequestNutritionDTO(Double carbs, Double protein, Double fat) {
+        RequestNutritionDTO dto = new RequestNutritionDTO();
+        dto.setCarbs(carbs);
+        dto.setProtein(protein);
+        dto.setFat(fat);
+        return dto;
+    }
 }
