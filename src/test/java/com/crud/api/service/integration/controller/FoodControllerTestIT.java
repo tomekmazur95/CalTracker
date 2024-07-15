@@ -15,7 +15,6 @@ import com.crud.api.repository.UserInfoRepository;
 import com.crud.api.repository.UserRepository;
 import com.crud.api.service.integration.AppMySQLContainer;
 import com.crud.api.service.integration.DatabaseSetupExtension;
-import com.crud.api.service.integration.helper.TestEntityFactory;
 import com.crud.api.service.integration.helper.TestJsonMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -32,6 +31,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Objects;
 
+import static com.crud.api.service.integration.helper.TestEntityFactory.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -106,14 +106,14 @@ public class FoodControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     void shouldCreateFood() throws Exception {
-        UserInfo userInfoDomain = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password123");
+        UserInfo userInfoDomain = createUserInfoDomain("john@gmail.com", "password123");
         userInfoRepository.save(userInfoDomain);
-        User userDomain = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
+        User userDomain = createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
         userDomain.setUserInfo(userInfoDomain);
         userRepository.save(userDomain);
 
-        RequestFoodFactDTO requestFoodFactDTO = TestEntityFactory.createRequestFoodFactDTO(100.0, 97.0, 5.0, 2.0, 11.0);
-        RequestFoodDTO requestFoodDTO = TestEntityFactory.createRequestFoodDTO("cottage cheese", "cottage cheese - description");
+        RequestFoodFactDTO requestFoodFactDTO = createRequestFoodFactDTO(100.0, 97.0, 5.0, 2.0, 11.0);
+        RequestFoodDTO requestFoodDTO = createRequestFoodDTO("cottage cheese", "cottage cheese - description");
         requestFoodDTO.setRequestFoodFactDTO(requestFoodFactDTO);
 
         mockMvc.perform(post("/foods")
@@ -162,13 +162,13 @@ public class FoodControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     void shouldReturnFoodList() throws Exception {
-        UserInfo userInfoDomain = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password123");
+        UserInfo userInfoDomain = createUserInfoDomain("john@gmail.com", "password123");
         userInfoRepository.save(userInfoDomain);
-        User userDomain = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
+        User userDomain = createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
         userDomain.setUserInfo(userInfoDomain);
         userRepository.save(userDomain);
-        Food foodDomain = TestEntityFactory.createFood("cottage cheese", "cottage cheese - description");
-        FoodFact foodFactDomain = TestEntityFactory.createFoodFact(100.0, 97.0, 5.0, 2.0, 11.0);
+        Food foodDomain = createFood("cottage cheese", "cottage cheese - description");
+        FoodFact foodFactDomain = createFoodFact(100.0, 97.0, 5.0, 2.0, 11.0);
         foodDomain.setFoodFact(foodFactDomain);
         foodDomain.setUser(userDomain);
         foodFactRepository.save(foodFactDomain);
@@ -187,9 +187,9 @@ public class FoodControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     void shouldReturnEmptyFoodList() throws Exception {
-        UserInfo userInfoDomain = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password123");
+        UserInfo userInfoDomain = createUserInfoDomain("john@gmail.com", "password123");
         userInfoRepository.save(userInfoDomain);
-        User userDomain = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
+        User userDomain = createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
         userDomain.setUserInfo(userInfoDomain);
         userRepository.save(userDomain);
 
