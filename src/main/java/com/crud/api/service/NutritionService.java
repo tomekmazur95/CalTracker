@@ -42,10 +42,7 @@ public class NutritionService {
     public ResponseNutritionDTO updateNutritions(RequestNutritionDTO requestNutritionDTO, Long nutritionId) {
         Nutrition domain = nutritionRepository.findById(nutritionId)
                 .orElseThrow(() -> new NutritionNotFoundException(String.format(NUTRITION_ID_NOT_FOUND, nutritionId)));
-        Long goalID = domain.getMeasurement().getId();
-        Measurement goal = measurementRepository.findById(goalID)
-                .orElseThrow(() -> new MeasurementNotFoundException(String.format(MEASUREMENT_ID_NOT_FOUND, goalID)));
-
+        Measurement goal = domain.getMeasurement();
         Map<String, Long> nutritionsMap = calculateNutritions(goal, requestNutritionDTO.getCarbs(), requestNutritionDTO.getFat(), requestNutritionDTO.getProtein());
         requestNutritionMapper.editableToDomain(requestNutritionDTO, domain, nutritionsMap);
         return responseNutritionMapper.fromDomain(domain);
