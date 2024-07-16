@@ -28,6 +28,7 @@ import java.util.Optional;
 
 import static com.crud.api.service.integration.helper.TestEntityFactory.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -77,7 +78,9 @@ public class NutritionControllerTestIT extends AppMySQLContainer {
         userDomain.setUserInfo(userInfoDomain);
         userRepository.save(userDomain);
         Measurement height = createHeight(183d);
-        Measurement weight = createMeasurementDomain(MeasureType.WEIGHT, 105d, Unit.KILOGRAMS);
+        height.setUser(userDomain);
+        Measurement weight = createMeasurementDomain(MeasureType.CURRENT_WEIGHT, 105d, Unit.KILOGRAMS);
+        weight.setUser(userDomain);
         measurementRepository.saveAll(List.of(height, weight));
 
         long userId = userDomain.getId();
@@ -90,9 +93,25 @@ public class NutritionControllerTestIT extends AppMySQLContainer {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(status().isOk());
 
-        Optional<Nutrition> nutrition = nutritionRepository.findById(userId);
-        Assertions.assertTrue(nutrition.isPresent());
-        RequestNutritionDTO requestNutritionDTO = createRequestNutritionDTO(40.0, 35.0, 25.0);
+        Optional<Nutrition> beforeUpdate = nutritionRepository.findById(userId);
+        Assertions.assertTrue(beforeUpdate.isPresent());
+        Nutrition defaultNutrition = beforeUpdate.get();
+        RequestNutritionDTO requestNutritionDTO = createRequestNutritionDTO(0.40, 0.35, 0.25);
+
+        mockMvc.perform(put("/nutritions/{nutritionId}", defaultNutrition.getId())
+                        .param("carbs", Double.toString(requestNutritionDTO.getCarbs()))
+                        .param("protein", Double.toString(requestNutritionDTO.getProtein()))
+                        .param("fat", Double.toString(requestNutritionDTO.getFat())))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isOk());
+
+        Optional<Nutrition> afterUpdate = nutritionRepository.findById(userId);
+        Assertions.assertTrue(afterUpdate.isPresent());
+        Nutrition nutritionAfterUpdate = afterUpdate.get();
+        Assertions.assertEquals(0.40, nutritionAfterUpdate.getCarbohydratePercent());
+        Assertions.assertEquals(0.35, nutritionAfterUpdate.getProteinPercent());
+        Assertions.assertEquals(0.25, nutritionAfterUpdate.getFatPercent());
     }
 
 }
