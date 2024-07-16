@@ -4,11 +4,9 @@ import com.crud.api.dto.RequestNutritionDTO;
 import com.crud.api.dto.ResponseNutritionDTO;
 import com.crud.api.entity.Measurement;
 import com.crud.api.entity.Nutrition;
-import com.crud.api.error.MeasurementNotFoundException;
 import com.crud.api.error.NutritionNotFoundException;
 import com.crud.api.mapper.RequestNutritionMapper;
 import com.crud.api.mapper.ResponseNutritionMapper;
-import com.crud.api.repository.MeasurementRepository;
 import com.crud.api.repository.NutritionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.crud.api.util.ConstantsUtils.MEASUREMENT_ID_NOT_FOUND;
 import static com.crud.api.util.ConstantsUtils.NUTRITION_ID_NOT_FOUND;
 import static com.crud.api.util.NutritionUtils.*;
 
@@ -28,7 +25,6 @@ public class NutritionService {
     private final NutritionRepository nutritionRepository;
     private final ResponseNutritionMapper responseNutritionMapper;
     private final RequestNutritionMapper requestNutritionMapper;
-    private final MeasurementRepository measurementRepository;
 
     public ResponseNutritionDTO calculateDefaultNutritions(Measurement goal) {
         Map<String, Long> nutritionsMap = calculateNutritions(goal, CARBS_DEFAULT_PERCENTAGE, FAT_DEFAULT_PERCENTAGE, PROTEIN_DEFAULT_PERCENTAGE);
@@ -42,10 +38,7 @@ public class NutritionService {
     public ResponseNutritionDTO updateNutritions(RequestNutritionDTO requestNutritionDTO, Long nutritionId) {
         Nutrition domain = nutritionRepository.findById(nutritionId)
                 .orElseThrow(() -> new NutritionNotFoundException(String.format(NUTRITION_ID_NOT_FOUND, nutritionId)));
-        Long goalID = domain.getMeasurement().getId();
-        Measurement goal = measurementRepository.findById(goalID)
-                .orElseThrow(() -> new MeasurementNotFoundException(String.format(MEASUREMENT_ID_NOT_FOUND, goalID)));
-
+        Measurement goal = domain.getMeasurement();
         Map<String, Long> nutritionsMap = calculateNutritions(goal, requestNutritionDTO.getCarbs(), requestNutritionDTO.getFat(), requestNutritionDTO.getProtein());
         requestNutritionMapper.editableToDomain(requestNutritionDTO, domain, nutritionsMap);
         return responseNutritionMapper.fromDomain(domain);

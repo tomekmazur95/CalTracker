@@ -17,7 +17,6 @@ import com.crud.api.repository.UserInfoRepository;
 import com.crud.api.repository.UserRepository;
 import com.crud.api.service.integration.AppMySQLContainer;
 import com.crud.api.service.integration.DatabaseSetupExtension;
-import com.crud.api.service.integration.helper.TestEntityFactory;
 import com.crud.api.service.integration.helper.TestJsonMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -38,6 +37,7 @@ import java.util.Objects;
 import java.util.Random;
 
 import static com.crud.api.enums.Gender.getGenderList;
+import static com.crud.api.service.integration.helper.TestEntityFactory.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -74,10 +74,10 @@ public class UserControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     public void shouldCreateUser() throws Exception {
-        UserInfo userInfo = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password");
+        UserInfo userInfo = createUserInfoDomain("john@gmail.com", "password");
         userInfoRepository.save(userInfo);
-        RequestMeasurementDTO height = TestEntityFactory.createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
-        RequestUserDTO userDTO = TestEntityFactory.createRequestUserDTO("John", Gender.MALE, Activity.MODERATELY_ACTIVE, 30);
+        RequestMeasurementDTO height = createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
+        RequestUserDTO userDTO = createRequestUserDTO("John", Gender.MALE, Activity.MODERATELY_ACTIVE, 30);
         userDTO.setHeight(height);
 
         mockMvc.perform(post("/users/{userInfoId}", userInfo.getId())
@@ -98,10 +98,10 @@ public class UserControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     public void shouldThrowExceptionWhenCreateUserWithNullUserName() throws Exception {
-        UserInfo userInfo = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password");
+        UserInfo userInfo = createUserInfoDomain("john@gmail.com", "password");
         userInfoRepository.save(userInfo);
-        RequestMeasurementDTO requestMeasurementDTO = TestEntityFactory.createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
-        RequestUserDTO requestUserDTO = TestEntityFactory.createRequestUserDTO(null, Gender.MALE, Activity.MODERATELY_ACTIVE, 30);
+        RequestMeasurementDTO requestMeasurementDTO = createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
+        RequestUserDTO requestUserDTO = createRequestUserDTO(null, Gender.MALE, Activity.MODERATELY_ACTIVE, 30);
         requestUserDTO.setHeight(requestMeasurementDTO);
 
         MvcResult result = mockMvc.perform(post("/users/{userInfoId}", userInfo.getId())
@@ -119,12 +119,12 @@ public class UserControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     public void shouldThrowExceptionWhenCreateUserWithUserInfoAlreadyExists() throws Exception {
-        UserInfo userInfo = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password");
+        UserInfo userInfo = createUserInfoDomain("john@gmail.com", "password");
         userInfoRepository.save(userInfo);
-        User user = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 30);
+        User user = createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 30);
         user.setUserInfo(userInfo);
         userRepository.save(user);
-        Measurement height = TestEntityFactory.createHeight(183.0);
+        Measurement height = createHeight(183.0);
         height.setUser(user);
         measurementRepository.save(height);
 
@@ -135,8 +135,8 @@ public class UserControllerTestIT extends AppMySQLContainer {
                 .andExpect(jsonPath("$.userName").value("John"))
                 .andExpect(jsonPath("$.height").exists());
 
-        RequestMeasurementDTO requestMeasurementDTO = TestEntityFactory.createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 170.0);
-        RequestUserDTO requestUserDTO = TestEntityFactory.createRequestUserDTO("Ann", Gender.FEMALE, Activity.LIGHTLY_ACTIVE, 20);
+        RequestMeasurementDTO requestMeasurementDTO = createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 170.0);
+        RequestUserDTO requestUserDTO = createRequestUserDTO("Ann", Gender.FEMALE, Activity.LIGHTLY_ACTIVE, 20);
         requestUserDTO.setHeight(requestMeasurementDTO);
 
         MvcResult result = mockMvc.perform(post("/users/{userInfoId}", userInfo.getId())
@@ -156,8 +156,8 @@ public class UserControllerTestIT extends AppMySQLContainer {
     @WithMockUser(authorities = {"USER"})
     public void shouldThrowExceptionWhenCreateUserWithIncorrectUserInfoID() throws Exception {
         Long id = 10L;
-        RequestMeasurementDTO requestMeasurementDTO = TestEntityFactory.createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 170.0);
-        RequestUserDTO requestUserDTO = TestEntityFactory.createRequestUserDTO("Ann", Gender.FEMALE, Activity.LIGHTLY_ACTIVE, 20);
+        RequestMeasurementDTO requestMeasurementDTO = createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 170.0);
+        RequestUserDTO requestUserDTO = createRequestUserDTO("Ann", Gender.FEMALE, Activity.LIGHTLY_ACTIVE, 20);
         requestUserDTO.setHeight(requestMeasurementDTO);
 
         MvcResult result = mockMvc.perform(post("/users/{userInfoId}", id)
@@ -237,12 +237,12 @@ public class UserControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     public void shouldReturnUserByUserInfoId() throws Exception {
-        UserInfo userInfo = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password");
+        UserInfo userInfo = createUserInfoDomain("john@gmail.com", "password");
         userInfoRepository.save(userInfo);
-        User user = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 30);
+        User user = createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 30);
         user.setUserInfo(userInfo);
         userRepository.save(user);
-        Measurement height = TestEntityFactory.createHeight(183.0);
+        Measurement height = createHeight(183.0);
         height.setUser(user);
         measurementRepository.save(height);
 
@@ -279,7 +279,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
     @WithMockUser(authorities = {"USER"})
     public void shouldThrowExceptionWhenUserNotFoundWhenUpdateUser() throws Exception {
         int userId = 10;
-        RequestUserDTO userDTO = TestEntityFactory.createRequestUserDTO("Thomas", Gender.MALE, Activity.MODERATELY_ACTIVE, 40);
+        RequestUserDTO userDTO = createRequestUserDTO("Thomas", Gender.MALE, Activity.MODERATELY_ACTIVE, 40);
 
         MvcResult result = mockMvc.perform(put("/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -298,8 +298,8 @@ public class UserControllerTestIT extends AppMySQLContainer {
     public void shouldUpdateUser() throws Exception {
         List<User> users = prepareData(1);
         Long userId = users.get(0).getId();
-        RequestMeasurementDTO height = TestEntityFactory.createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
-        RequestUserDTO requestUserDTO = TestEntityFactory.createRequestUserDTO("John", Gender.MALE, Activity.LIGHTLY_ACTIVE, 30);
+        RequestMeasurementDTO height = createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
+        RequestUserDTO requestUserDTO = createRequestUserDTO("John", Gender.MALE, Activity.LIGHTLY_ACTIVE, 30);
         requestUserDTO.setHeight(height);
 
         User userBeforeUpdate = userRepository.findById(userId).orElseThrow();
@@ -327,7 +327,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
     public void shouldUpdateActivity() throws Exception {
         List<User> users = prepareData(1);
         User user = users.get(0);
-        RequestUserActivityDTO requestUserActivityDTO = TestEntityFactory.createRequestUserActivityDTO(Activity.SEDENTARY);
+        RequestUserActivityDTO requestUserActivityDTO = createRequestUserActivityDTO(Activity.SEDENTARY);
         mockMvc.perform(patch("/users/{id}", user.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestJsonMapper.asJsonString(requestUserActivityDTO)))
@@ -342,7 +342,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
     @WithMockUser(authorities = {"USER"})
     public void shouldThrowExceptionWhenUpdateActivity() throws Exception {
         int userId = 10;
-        RequestUserActivityDTO requestUserActivityDTO = TestEntityFactory.createRequestUserActivityDTO(Activity.EXTRA_ACTIVE);
+        RequestUserActivityDTO requestUserActivityDTO = createRequestUserActivityDTO(Activity.EXTRA_ACTIVE);
         MvcResult result = mockMvc.perform(patch("/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestJsonMapper.asJsonString(requestUserActivityDTO)))
@@ -398,10 +398,10 @@ public class UserControllerTestIT extends AppMySQLContainer {
             for (int j = 0; j < 5; j++) {
                 password.append(new Random().nextInt(9));
             }
-            UserInfo userInfo = TestEntityFactory.createUserInfoDomain(i + "@gmail.com", password.toString());
+            UserInfo userInfo = createUserInfoDomain(i + "@gmail.com", password.toString());
             userInfoRepository.save(userInfo);
             List<Gender> genderList = getGenderList();
-            User userDomain = TestEntityFactory.createUserDomain(
+            User userDomain = createUserDomain(
                     i + "name",
                     genderList.get(new Random().nextInt(genderList.size())),
                     Activity.getActivityList().get(new Random().nextInt(Activity.getActivityList().size())),
@@ -409,7 +409,7 @@ public class UserControllerTestIT extends AppMySQLContainer {
             userDomain.setUserInfo(userInfo);
             userRepository.save(userDomain);
 
-            Measurement heightDomain = TestEntityFactory.createHeight(new Random().nextDouble(160.0, 190.0));
+            Measurement heightDomain = createHeight(new Random().nextDouble(160.0, 190.0));
             heightDomain.setUser(userDomain);
             measurementRepository.save(heightDomain);
             userList.add(userDomain);

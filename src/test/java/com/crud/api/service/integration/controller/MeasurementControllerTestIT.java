@@ -14,7 +14,6 @@ import com.crud.api.repository.UserInfoRepository;
 import com.crud.api.repository.UserRepository;
 import com.crud.api.service.integration.AppMySQLContainer;
 import com.crud.api.service.integration.DatabaseSetupExtension;
-import com.crud.api.service.integration.helper.TestEntityFactory;
 import com.crud.api.service.integration.helper.TestJsonMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -32,6 +31,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.util.List;
 import java.util.Objects;
 
+import static com.crud.api.service.integration.helper.TestEntityFactory.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -101,14 +101,14 @@ public class MeasurementControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     void shouldCreateMeasurement() throws Exception {
-        UserInfo userInfoDomain = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password123");
+        UserInfo userInfoDomain = createUserInfoDomain("john@gmail.com", "password123");
         userInfoRepository.save(userInfoDomain);
-        User userDomain = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
+        User userDomain = createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
         userDomain.setUserInfo(userInfoDomain);
         userRepository.save(userDomain);
 
         long userId = userDomain.getId();
-        RequestMeasurementDTO requestMeasurementDTO = TestEntityFactory.createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
+        RequestMeasurementDTO requestMeasurementDTO = createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
 
         mockMvc.perform(post("/user/{userId}/measurements", userId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -124,7 +124,7 @@ public class MeasurementControllerTestIT extends AppMySQLContainer {
     @WithMockUser(authorities = {"USER"})
     void shouldThrowExceptionWhenUserNotExists() throws Exception {
         long userId = 7L;
-        RequestMeasurementDTO requestMeasurementDTO = TestEntityFactory.createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
+        RequestMeasurementDTO requestMeasurementDTO = createRequestMeasurementDTO(MeasureType.HEIGHT, Unit.CENTIMETERS, 183.0);
 
         MvcResult result = mockMvc.perform(post("/user/{userId}/measurements", userId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -143,9 +143,9 @@ public class MeasurementControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     void shouldReturnEmptyMeasurementList() throws Exception {
-        UserInfo userInfoDomain = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password123");
+        UserInfo userInfoDomain = createUserInfoDomain("john@gmail.com", "password123");
         userInfoRepository.save(userInfoDomain);
-        User userDomain = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
+        User userDomain = createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
         userDomain.setUserInfo(userInfoDomain);
         userRepository.save(userDomain);
 
@@ -165,14 +165,14 @@ public class MeasurementControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     void shouldReturnMeasurementListSortedById() throws Exception {
-        UserInfo userInfoDomain = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password123");
+        UserInfo userInfoDomain = createUserInfoDomain("john@gmail.com", "password123");
         userInfoRepository.save(userInfoDomain);
-        User userDomain = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
+        User userDomain = createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
         userDomain.setUserInfo(userInfoDomain);
         userRepository.save(userDomain);
-        Measurement height = TestEntityFactory.createHeight(183.0);
+        Measurement height = createHeight(183.0);
         height.setUser(userDomain);
-        Measurement weight = TestEntityFactory.createMeasurementDomain(MeasureType.WEIGHT, 100D, Unit.KILOGRAMS);
+        Measurement weight = createMeasurementDomain(MeasureType.WEIGHT, 100D, Unit.KILOGRAMS);
         weight.setUser(userDomain);
         measurementRepository.saveAll(List.of(height, weight));
 
@@ -189,16 +189,16 @@ public class MeasurementControllerTestIT extends AppMySQLContainer {
     @Test
     @WithMockUser(authorities = {"USER"})
     void shouldReturnLastMeasurement() throws Exception {
-        UserInfo userInfoDomain = TestEntityFactory.createUserInfoDomain("john@gmail.com", "password123");
+        UserInfo userInfoDomain = createUserInfoDomain("john@gmail.com", "password123");
         userInfoRepository.save(userInfoDomain);
-        User userDomain = TestEntityFactory.createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
+        User userDomain = createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
         userDomain.setUserInfo(userInfoDomain);
         userRepository.save(userDomain);
-        Measurement height = TestEntityFactory.createHeight(183.0);
+        Measurement height = createHeight(183.0);
         height.setUser(userDomain);
-        Measurement weight = TestEntityFactory.createMeasurementDomain(MeasureType.WEIGHT, 100D, Unit.KILOGRAMS);
+        Measurement weight = createMeasurementDomain(MeasureType.WEIGHT, 100D, Unit.KILOGRAMS);
         weight.setUser(userDomain);
-        Measurement lastWeight = TestEntityFactory.createMeasurementDomain(MeasureType.WEIGHT, 98D, Unit.KILOGRAMS);
+        Measurement lastWeight = createMeasurementDomain(MeasureType.WEIGHT, 98D, Unit.KILOGRAMS);
         lastWeight.setUser(userDomain);
         measurementRepository.saveAll(List.of(height, weight, lastWeight));
 
