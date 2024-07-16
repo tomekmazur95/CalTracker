@@ -22,8 +22,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.crud.api.service.integration.helper.TestEntityFactory.*;
@@ -70,6 +72,23 @@ public class NutritionControllerTestIT extends AppMySQLContainer {
     }
 
     @Test
+    void shouldThrowForbiddenExceptionWhenUserIsUnauthorized() throws Exception {
+        long nutritionId = 10;
+        RequestNutritionDTO requestNutritionDTO = createRequestNutritionDTO(0.60, 0.20, 0.20);
+        MvcResult result = mockMvc.perform(put("/nutritions/{nutritionId}", nutritionId)
+                        .param("carbs", Double.toString(requestNutritionDTO.getCarbs()))
+                        .param("protein", Double.toString(requestNutritionDTO.getProtein()))
+                        .param("fat", Double.toString(requestNutritionDTO.getFat())))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+        int status = result.getResponse().getStatus();
+        Assertions.assertEquals(403, status);
+    }
+
+    @Test
     @WithMockUser(authorities = {"USER"})
     void shouldUpdateNutritions() throws Exception {
         UserInfo userInfoDomain = createUserInfoDomain("john@gmail.com", "password123");
@@ -96,6 +115,10 @@ public class NutritionControllerTestIT extends AppMySQLContainer {
         Optional<Nutrition> beforeUpdate = nutritionRepository.findById(userId);
         Assertions.assertTrue(beforeUpdate.isPresent());
         Nutrition defaultNutrition = beforeUpdate.get();
+        Assertions.assertEquals(0.50, defaultNutrition.getCarbohydratePercent());
+        Assertions.assertEquals(0.30, defaultNutrition.getProteinPercent());
+        Assertions.assertEquals(0.20, defaultNutrition.getFatPercent());
+
         RequestNutritionDTO requestNutritionDTO = createRequestNutritionDTO(0.40, 0.35, 0.25);
 
         mockMvc.perform(put("/nutritions/{nutritionId}", defaultNutrition.getId())
@@ -112,6 +135,27 @@ public class NutritionControllerTestIT extends AppMySQLContainer {
         Assertions.assertEquals(0.40, nutritionAfterUpdate.getCarbohydratePercent());
         Assertions.assertEquals(0.35, nutritionAfterUpdate.getProteinPercent());
         Assertions.assertEquals(0.25, nutritionAfterUpdate.getFatPercent());
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void shouldThrowExceptionWhenNutritionNotFound() throws Exception {
+        long nutritionId = 10;
+        RequestNutritionDTO requestNutritionDTO = createRequestNutritionDTO(0.60, 0.20, 0.20);
+        MvcResult result = mockMvc.perform(put("/nutritions/{nutritionId}", nutritionId)
+                        .param("carbs", Double.toString(requestNutritionDTO.getCarbs()))
+                        .param("protein", Double.toString(requestNutritionDTO.getProtein()))
+                        .param("fat", Double.toString(requestNutritionDTO.getFat())))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        int status = result.getResponse().getStatus();
+        String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
+        Assertions.assertEquals(String.format("Nutrition with id: %s not found", nutritionId), errorMessage);
+        Assertions.assertTrue(nutritionRepository.findById(nutritionId).isEmpty());
+        Assertions.assertEquals(404, status);
     }
 
 }
