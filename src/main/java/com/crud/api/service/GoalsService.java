@@ -65,7 +65,7 @@ public class GoalsService {
             .toList();
 
         if (list.isEmpty()) {
-            throw new MeasurementNotFoundException(String.format(MEASUREMENT_TYPE_NOT_FOUND, MeasureType.CURRENT_WEIGHT, userId));
+            throw new MeasurementNotFoundException(String.format(MEASUREMENT_TYPE_NOT_FOUND, CURRENT_WEIGHT, userId));
         }
         return list.get(0);
     }
