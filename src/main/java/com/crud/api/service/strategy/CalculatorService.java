@@ -10,14 +10,17 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CalculatorService {
 
-    private final Map<String, GoalStrategy> goalStrategy;
+    private final Map<String, GoalStrategy> goalStrategyMap;
 
-    public UserGoalsResponseDTO calculate(Long userId, String goal) {
-        GoalStrategy goalStrategy = this.goalStrategy.get(goal);
-        if (goalStrategy != null) {
-            return goalStrategy.calculate(userId);
-        } else {
-            throw new IllegalArgumentException("Goal type not supported");
+    public UserGoalsResponseDTO calculate(Long userId, String goalName) {
+        String calculatorType;
+        switch (goalName) {
+            case "ENERGY_SURPLUS" -> calculatorType = "surplusCalculator";
+            case "ENERGY_DEFICIT" -> calculatorType = "deficitCalculator";
+            case "ENERGY_TDEE" -> calculatorType = "tdeeCalculator";
+            default ->  throw new IllegalArgumentException("Goal type not supported");
         }
+        GoalStrategy goalStrategy = this.goalStrategyMap.get(calculatorType);
+        return goalStrategy.calculate(userId);
     }
 }

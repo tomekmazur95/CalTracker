@@ -16,7 +16,7 @@ import java.time.LocalDate;
 
 import static com.crud.api.util.GoalUtils.SURPLUS;
 
-@Component("ENERGY_SURPLUS")
+@Component
 public class SurplusCalculator extends AbstractGoalCalculator implements GoalStrategy {
 
     public SurplusCalculator(UserRepository userRepository, MeasurementRepository measurementRepository, NutritionService nutritionService, ResponseMeasurementMapper responseMeasurementMapper) {
