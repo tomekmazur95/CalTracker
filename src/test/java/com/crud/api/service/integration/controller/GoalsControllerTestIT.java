@@ -1,11 +1,13 @@
 package com.crud.api.service.integration.controller;
 
 
+import com.crud.api.entity.Measurement;
 import com.crud.api.entity.User;
 import com.crud.api.entity.UserInfo;
 import com.crud.api.enums.Activity;
 import com.crud.api.enums.Gender;
 import com.crud.api.enums.MeasureType;
+import com.crud.api.enums.Unit;
 import com.crud.api.repository.MeasurementRepository;
 import com.crud.api.repository.UserInfoRepository;
 import com.crud.api.repository.UserRepository;
@@ -25,9 +27,9 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Objects;
 
-import static com.crud.api.service.integration.helper.TestEntityFactory.createUserDomain;
-import static com.crud.api.service.integration.helper.TestEntityFactory.createUserInfoDomain;
+import static com.crud.api.service.integration.helper.TestEntityFactory.*;
 import static com.crud.api.util.ConstantsUtils.CURRENT_WEIGHT;
+import static com.crud.api.util.ConstantsUtils.ENERGY_GOAL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -110,4 +112,29 @@ public class GoalsControllerTestIT extends AppMySQLContainer {
         Assertions.assertEquals(404, status);
     }
 
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void shouldThrowMeasurementExceptionWhenGoalNotFound() throws Exception {
+        UserInfo userInfoDomain = createUserInfoDomain("john@gmail.com", "password123");
+        userInfoRepository.save(userInfoDomain);
+        User userDomain = createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
+        userDomain.setUserInfo(userInfoDomain);
+        userRepository.save(userDomain);
+        Measurement currentWeight = createMeasurementDomain(MeasureType.CURRENT_WEIGHT, 85.0, Unit.KILOGRAMS);
+        currentWeight.setUser(userDomain);
+        measurementRepository.save(currentWeight);
+
+        long userId = userDomain.getId();
+
+        MvcResult result = mockMvc.perform(get("/goals/{userId}", userId))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        int status = result.getResponse().getStatus();
+        String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
+        Assertions.assertEquals(String.format("Measurement Type: %s not found for User with id %s", ENERGY_GOAL, userId), errorMessage);
+        Assertions.assertEquals(404, status);
+    }
 }
