@@ -12,6 +12,7 @@ public class ConstantsUtils {
     public static final String MEASUREMENT_TYPE_NOT_FOUND = "Measurement Type: %s not found for User with id %s";
     public static final String NUTRITION_NOT_FOUND = "Nutrition not found for Measurement with id %s";
     public static final String ENERGY_GOAL = "ENERGY GOAL";
+    public static final String CURRENT_WEIGHT= "CURRENT WEIGHT";
     public static final String FOOD_NOT_FOUND = "Food with id: %s not found";
     public static final String ID = "id";
     public static final String NUTRITION_ID_NOT_FOUND = "Nutrition with id: %s not found";

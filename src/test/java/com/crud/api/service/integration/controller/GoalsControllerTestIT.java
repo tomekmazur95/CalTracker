@@ -27,6 +27,7 @@ import java.util.Objects;
 
 import static com.crud.api.service.integration.helper.TestEntityFactory.createUserDomain;
 import static com.crud.api.service.integration.helper.TestEntityFactory.createUserInfoDomain;
+import static com.crud.api.util.ConstantsUtils.CURRENT_WEIGHT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -105,7 +106,7 @@ public class GoalsControllerTestIT extends AppMySQLContainer {
 
         int status = result.getResponse().getStatus();
         String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
-        Assertions.assertEquals(String.format("Measurement Type: %s not found for User with id %s", MeasureType.CURRENT_WEIGHT, userId), errorMessage);
+        Assertions.assertEquals(String.format("Measurement Type: %s not found for User with id %s", CURRENT_WEIGHT, userId), errorMessage);
         Assertions.assertEquals(404, status);
     }
 
