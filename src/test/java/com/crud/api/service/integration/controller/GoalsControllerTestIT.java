@@ -137,4 +137,33 @@ public class GoalsControllerTestIT extends AppMySQLContainer {
         Assertions.assertEquals(String.format("Measurement Type: %s not found for User with id %s", ENERGY_GOAL, userId), errorMessage);
         Assertions.assertEquals(404, status);
     }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void shouldThrowNutritionExceptionWhenNutritionNotFound() throws Exception {
+        UserInfo userInfoDomain = createUserInfoDomain("john@gmail.com", "password123");
+        userInfoRepository.save(userInfoDomain);
+        User userDomain = createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
+        userDomain.setUserInfo(userInfoDomain);
+        userRepository.save(userDomain);
+        Measurement currentWeight = createMeasurementDomain(MeasureType.CURRENT_WEIGHT, 85.0, Unit.KILOGRAMS);
+        currentWeight.setUser(userDomain);
+        measurementRepository.save(currentWeight);
+        Measurement energyGoal = createMeasurementDomain(MeasureType.ENERGY_SURPLUS, 4000.0, Unit.CALORIES);
+        energyGoal.setUser(userDomain);
+        measurementRepository.save(energyGoal);
+
+        long userId = userDomain.getId();
+
+        MvcResult result = mockMvc.perform(get("/goals/{userId}", userId))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        int status = result.getResponse().getStatus();
+        String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
+        Assertions.assertEquals(String.format("Nutrition not found for Measurement with id %s", energyGoal.getId()), errorMessage);
+        Assertions.assertEquals(404, status);
+    }
 }
