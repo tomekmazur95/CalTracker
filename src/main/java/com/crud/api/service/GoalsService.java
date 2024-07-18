@@ -38,7 +38,8 @@ public class GoalsService {
     @Transactional
     public UserGoalsResponseDTO findUserGoals(Long userId) {
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND, userId)));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND, userId)));
         Activity activity = user.getActivity();
 
         Measurement currentWeight = fetchLatestCurrentWeight(userId);

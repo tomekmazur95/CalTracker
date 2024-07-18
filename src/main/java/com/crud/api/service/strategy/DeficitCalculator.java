@@ -16,7 +16,7 @@ import java.time.LocalDate;
 
 import static com.crud.api.util.GoalUtils.DEFICIT;
 
-@Component("ENERGY_DEFICIT")
+@Component
 public class DeficitCalculator extends AbstractGoalCalculator implements GoalStrategy {
 
     public DeficitCalculator(UserRepository userRepository, MeasurementRepository measurementRepository, NutritionService nutritionService, ResponseMeasurementMapper responseMeasurementMapper) {

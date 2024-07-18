@@ -10,7 +10,7 @@ import com.crud.api.service.NutritionService;
 import com.crud.api.service.base.AbstractGoalCalculator;
 import org.springframework.stereotype.Component;
 
-@Component("ENERGY_TDEE")
+@Component
 public class TdeeCalculator extends AbstractGoalCalculator implements GoalStrategy {
 
     public TdeeCalculator(UserRepository userRepository, MeasurementRepository measurementRepository, NutritionService nutritionService, ResponseMeasurementMapper responseMeasurementMapper) {
