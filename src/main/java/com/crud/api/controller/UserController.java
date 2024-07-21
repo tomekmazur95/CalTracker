@@ -42,6 +42,7 @@ public class UserController implements UserControllerSwagger {
         return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
     }
 
+    @Override
     @GetMapping("/userInfo")
     @PreAuthorize(value = "hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<ResponseUserDTO> findByUserInfoId(@RequestParam(name = "id") Long userInfoId) {
@@ -55,6 +56,7 @@ public class UserController implements UserControllerSwagger {
         return new ResponseEntity<>(userService.updateUser(id, dto), HttpStatus.OK);
     }
 
+    @Override
     @PatchMapping("/{id}")
     @PreAuthorize(value = "hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<ResponseUserActivityDTO> updateUserActivity(@PathVariable Long id, @RequestBody RequestUserActivityDTO activityDTO) {
