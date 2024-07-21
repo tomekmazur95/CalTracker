@@ -10,24 +10,17 @@ import com.crud.api.entity.UserInfo;
 import com.crud.api.enums.MeasureType;
 import com.crud.api.error.UserAlreadyExistsException;
 import com.crud.api.error.UserNotFoundException;
-import com.crud.api.mapper.RequestMeasurementMapper;
-import com.crud.api.mapper.RequestUserActivityMapper;
-import com.crud.api.mapper.RequestUserMapper;
-import com.crud.api.mapper.ResponseUserActivityMapper;
-import com.crud.api.mapper.ResponseUserMapper;
+import com.crud.api.mapper.*;
 import com.crud.api.repository.MeasurementRepository;
 import com.crud.api.repository.UserInfoRepository;
 import com.crud.api.repository.UserRepository;
-
-import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.function.Function;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Comparator;
+import java.util.List;
 
 import static com.crud.api.util.ConstantsUtils.*;
 
@@ -125,7 +118,7 @@ public class UserService {
 
     public ResponseUserActivityDTO updateUserActivity(Long id, RequestUserActivityDTO requestUserActivityDTO) {
         User user = userRepository.findById(id)
-            .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND, id)));
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND, id)));
 
         requestUserActivityMapper.fillInDomain(requestUserActivityDTO, user);
         userRepository.save(user);
