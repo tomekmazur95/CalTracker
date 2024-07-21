@@ -22,7 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
-@OpenAPIDefinition(info = @Info(title = "This is app title", description = "this is description"))
+@OpenAPIDefinition(info = @Info(title = "CalTracker", description = "An app for tracking daily calories and macronutrients"))
 @SecurityScheme(
         name = "Bearer Authentication",
         type = SecuritySchemeType.HTTP,
