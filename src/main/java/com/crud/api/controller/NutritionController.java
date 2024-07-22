@@ -1,5 +1,6 @@
 package com.crud.api.controller;
 
+import com.crud.api.controller.swagger.NutritionControllerSwagger;
 import com.crud.api.dto.RequestNutritionDTO;
 import com.crud.api.dto.ResponseNutritionDTO;
 import com.crud.api.service.NutritionService;
@@ -15,10 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/nutritions")
-public class NutritionController {
+public class NutritionController implements NutritionControllerSwagger {
 
     private final NutritionService nutritionService;
 
+    @Override
     @PutMapping("/{nutritionId}")
     @PreAuthorize(value = "hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<ResponseNutritionDTO> updateNutritions(RequestNutritionDTO requestNutritionDTO, @PathVariable Long nutritionId) {
