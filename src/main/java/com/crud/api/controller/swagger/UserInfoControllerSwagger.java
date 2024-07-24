@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 public interface UserInfoControllerSwagger {
 
     @Operation(
-            summary = "Find user information",
-            description = "Returns the authenticated user's information based on the current security context.")
+            summary = "Find User information",
+            description = "Returns the authenticated User's information based on the current security context.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation, returns user details"),
             @ApiResponse(responseCode = "401", description = "Unauthorized - Authentication token not found")

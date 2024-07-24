@@ -40,7 +40,7 @@ public interface UserControllerSwagger {
 
     @Operation(
             summary = "Find User By Id",
-            description = "Retrieve a user by their unique identifier (ID)"
+            description = "Retrieve a User by their unique identifier (ID)"
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
@@ -54,7 +54,7 @@ public interface UserControllerSwagger {
 
     @Operation(
             summary = "Find User By UserInfo ID",
-            description = "Retrieve a user based on the provided userInfo ID"
+            description = "Retrieve a User based on the provided userInfo ID"
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
@@ -68,7 +68,7 @@ public interface UserControllerSwagger {
 
     @Operation(
             summary = "Update User",
-            description = "Update the details of an existing user based on the provided ID and user information"
+            description = "Update the details of an existing User based on the provided ID and user information"
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
@@ -83,7 +83,7 @@ public interface UserControllerSwagger {
 
     @Operation(
             summary = "Update User Activity",
-            description = "Update the activity details for a user based on the provided ID and activity information"
+            description = "Update the activity details for a User based on the provided ID and activity information"
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
@@ -98,7 +98,7 @@ public interface UserControllerSwagger {
 
     @Operation(
             summary = "Delete User By Id",
-            description = "Delete a user from the system based on the provided user ID")
+            description = "Delete a User from the system based on the provided user ID")
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User successfully deleted"),
@@ -107,5 +107,4 @@ public interface UserControllerSwagger {
             @ApiResponse(responseCode = "500", description = "In case of any exception")
     })
     ResponseEntity<Void> deleteUserById(Long id);
-
 }

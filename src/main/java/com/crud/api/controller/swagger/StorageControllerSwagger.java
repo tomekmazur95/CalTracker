@@ -14,7 +14,7 @@ public interface StorageControllerSwagger {
 
     @Operation(
             summary = "Upload an image",
-            description = "Uploads an image for a specific user"
+            description = "Uploads an image for a specific User"
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
@@ -28,7 +28,7 @@ public interface StorageControllerSwagger {
 
     @Operation(
             summary = "Download an image",
-            description = "Downloads an image for a specific user"
+            description = "Downloads an image for a specific User"
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
