@@ -15,7 +15,7 @@ public interface MeasurementControllerSwagger {
 
     @Operation(
             summary = "Create Measurement",
-            description = "Creates a new measurement in the system for a specified user"
+            description = "Creates a new measurement in the system for a specified User"
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
@@ -28,7 +28,7 @@ public interface MeasurementControllerSwagger {
 
     @Operation(
             summary = "Retrieve All Measurements for a User",
-            description = "Fetches all measurements associated with the specified user ID"
+            description = "Fetches all measurements associated with the specified User ID"
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
@@ -43,7 +43,7 @@ public interface MeasurementControllerSwagger {
 
     @Operation(
             summary = "Retrieve the Last Measurement for a User",
-            description = "Fetches the last measurement for a specified user ID and measurement type"
+            description = "Fetches the last measurement for a specified User ID and measurement type"
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
