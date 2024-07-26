@@ -16,7 +16,6 @@ public class ConstantsUtils {
     public static final String FOOD_NOT_FOUND = "Food with id: %s not found";
     public static final String ID = "id";
     public static final String NUTRITION_ID_NOT_FOUND = "Nutrition with id: %s not found";
-    public static final String MEASUREMENT_ID_NOT_FOUND = "Measurement with id: %s not found";
     public static final String USER_INFO_ID_NOT_FOUND = "User with user info id: %s not found";
     public static final String USER_INFO_ALREADY_EXISTS = "User with user info id: %s already exists";
 

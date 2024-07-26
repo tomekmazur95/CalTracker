@@ -1,6 +1,6 @@
 package com.crud.api.util;
 
-import com.crud.api.enums.MacroElement;
+import static com.crud.api.enums.MacroElement.*;
 
 public class NutritionUtils {
 
@@ -8,10 +8,10 @@ public class NutritionUtils {
         // utility class
     }
 
-    public static final double CARBS_DEFAULT_PERCENTAGE = MacroElement.CARBOHYDRATE.getDefaultPercentage();
-    public static final double FAT_DEFAULT_PERCENTAGE = MacroElement.FAT.getDefaultPercentage();
-    public static final double PROTEIN_DEFAULT_PERCENTAGE = MacroElement.PROTEIN.getDefaultPercentage();
-    public static final double CARBS_PER_GRAM = MacroElement.CARBOHYDRATE.getCaloriePerGram();
-    public static final double FAT_PER_GRAM = MacroElement.FAT.getCaloriePerGram();
-    public static final double PROTEIN_PER_GRAM = MacroElement.PROTEIN.getCaloriePerGram();
+    public static final double CARBS_DEFAULT_PERCENTAGE = CARBOHYDRATE.getDefaultPercentage();
+    public static final double FAT_DEFAULT_PERCENTAGE = FAT.getDefaultPercentage();
+    public static final double PROTEIN_DEFAULT_PERCENTAGE = PROTEIN.getDefaultPercentage();
+    public static final double CARBS_PER_GRAM = CARBOHYDRATE.getCaloriePerGram();
+    public static final double FAT_PER_GRAM = FAT.getCaloriePerGram();
+    public static final double PROTEIN_PER_GRAM = PROTEIN.getCaloriePerGram();
 }
