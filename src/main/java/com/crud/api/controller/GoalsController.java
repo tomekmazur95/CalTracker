@@ -1,5 +1,6 @@
 package com.crud.api.controller;
 
+import com.crud.api.controller.swagger.GoalControllerSwagger;
 import com.crud.api.dto.UserGoalsResponseDTO;
 import com.crud.api.service.GoalsService;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/goals")
 @RequiredArgsConstructor
-public class GoalsController {
+public class GoalsController implements GoalControllerSwagger {
 
     private final GoalsService goalsService;
 
+    @Override
     @GetMapping("/{userId}")
     @PreAuthorize(value = "hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<UserGoalsResponseDTO> findUserGoals(@PathVariable Long userId) {
