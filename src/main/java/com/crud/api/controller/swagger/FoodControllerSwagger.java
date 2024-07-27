@@ -18,7 +18,7 @@ public interface FoodControllerSwagger {
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operation successful, food created"),
+            @ApiResponse(responseCode = "201", description = "Operation successful, food created"),
             @ApiResponse(responseCode = "400", description = "Bad request, invalid input"),
             @ApiResponse(responseCode = "401", description = "In case of unauthorized access"),
             @ApiResponse(responseCode = "500", description = "In case of any exception")
