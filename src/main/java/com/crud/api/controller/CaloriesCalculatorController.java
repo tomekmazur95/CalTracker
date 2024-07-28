@@ -1,5 +1,6 @@
 package com.crud.api.controller;
 
+import com.crud.api.controller.swagger.CaloriesCalculatorControllerSwagger;
 import com.crud.api.dto.UserGoalsResponseDTO;
 import com.crud.api.service.strategy.CalculatorService;
 import lombok.RequiredArgsConstructor;
@@ -11,10 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/user/{userId}/calories")
 @RequiredArgsConstructor
-public class CaloriesCalculatorController {
+public class CaloriesCalculatorController implements CaloriesCalculatorControllerSwagger {
 
     private final CalculatorService calculatorService;
 
+    @Override
     @PostMapping()
     @PreAuthorize(value = "hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<UserGoalsResponseDTO> calculate(@PathVariable Long userId, @RequestParam String goal) {
