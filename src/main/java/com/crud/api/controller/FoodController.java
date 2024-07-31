@@ -7,6 +7,7 @@ import com.crud.api.service.FoodService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,12 +21,14 @@ public class FoodController implements FoodControllerSwagger {
 
     @Override
     @PostMapping()
+    @PreAuthorize(value = "hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<ResponseFoodDTO> createFood(@RequestBody RequestFoodDTO dto, @RequestParam Long userId) {
         return new ResponseEntity<>(foodService.createFood(dto, userId), HttpStatus.CREATED);
     }
 
     @Override
     @GetMapping()
+    @PreAuthorize(value = "hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<List<ResponseFoodDTO>> findUserFoods(@RequestParam Long userId) {
         return new ResponseEntity<>(foodService.findUserFoods(userId), HttpStatus.OK);
     }
