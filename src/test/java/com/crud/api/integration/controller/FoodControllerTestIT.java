@@ -1,4 +1,4 @@
-package com.crud.api.service.integration.controller;
+package com.crud.api.integration.controller;
 
 
 import com.crud.api.dto.RequestFoodDTO;
@@ -13,9 +13,9 @@ import com.crud.api.repository.FoodFactRepository;
 import com.crud.api.repository.FoodRepository;
 import com.crud.api.repository.UserInfoRepository;
 import com.crud.api.repository.UserRepository;
-import com.crud.api.service.integration.AppMySQLContainer;
-import com.crud.api.service.integration.DatabaseSetupExtension;
-import com.crud.api.service.integration.helper.TestJsonMapper;
+import com.crud.api.integration.AppMySQLContainer;
+import com.crud.api.integration.DatabaseSetupExtension;
+import com.crud.api.integration.helper.TestJsonMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -31,7 +32,8 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Objects;
 
-import static com.crud.api.service.integration.helper.TestEntityFactory.*;
+import static com.crud.api.integration.helper.TestEntityFactory.*;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -80,7 +82,7 @@ public class FoodControllerTestIT extends AppMySQLContainer {
                 .andReturn();
 
         int status = result.getResponse().getStatus();
-        Assertions.assertEquals(403, status);
+        Assertions.assertEquals(HttpStatus.FORBIDDEN.value(), status);
     }
 
     @Test
@@ -100,7 +102,7 @@ public class FoodControllerTestIT extends AppMySQLContainer {
         String errorMessage = Objects.requireNonNull(result.getResolvedException()).getMessage();
         Assertions.assertEquals(String.format("User with id: %s not found", userId), errorMessage);
         Assertions.assertTrue(userRepository.findById(userId).isEmpty());
-        Assertions.assertEquals(404, status);
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), status);
     }
 
     @Test
@@ -130,16 +132,18 @@ public class FoodControllerTestIT extends AppMySQLContainer {
                 .andExpect(jsonPath("$.responseFoodFactDTO.value").value(100))
                 .andExpect(jsonPath("$.responseFoodFactDTO.carbohydrate").value(2.0));
 
-        mockMvc.perform(get("/foods")
+        MvcResult result = mockMvc.perform(get("/foods")
                         .param("userId", String.valueOf(userDomain.getId())))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1))
                 .andExpect(jsonPath("$[0].name").value(requestFoodDTO.getName()))
-                .andExpect(jsonPath("$[0].responseFoodFactDTO.calories").value(requestFoodDTO.getRequestFoodFactDTO().getCalories()));
+                .andExpect(jsonPath("$[0].responseFoodFactDTO.calories").value(requestFoodDTO.getRequestFoodFactDTO().getCalories()))
+                .andReturn();
 
         Assertions.assertFalse(foodRepository.findAllByUserId(userDomain.getId()).isEmpty());
+        Assertions.assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }
 
     @Test

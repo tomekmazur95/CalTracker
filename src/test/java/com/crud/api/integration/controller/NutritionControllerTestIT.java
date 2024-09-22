@@ -1,4 +1,4 @@
-package com.crud.api.service.integration.controller;
+package com.crud.api.integration.controller;
 
 import com.crud.api.dto.RequestNutritionDTO;
 import com.crud.api.entity.Measurement;
@@ -10,8 +10,8 @@ import com.crud.api.enums.Gender;
 import com.crud.api.enums.MeasureType;
 import com.crud.api.enums.Unit;
 import com.crud.api.repository.*;
-import com.crud.api.service.integration.AppMySQLContainer;
-import com.crud.api.service.integration.DatabaseSetupExtension;
+import com.crud.api.integration.AppMySQLContainer;
+import com.crud.api.integration.DatabaseSetupExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.crud.api.service.integration.helper.TestEntityFactory.*;
+import static com.crud.api.integration.helper.TestEntityFactory.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

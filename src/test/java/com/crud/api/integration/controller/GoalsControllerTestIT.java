@@ -1,4 +1,4 @@
-package com.crud.api.service.integration.controller;
+package com.crud.api.integration.controller;
 
 
 import com.crud.api.entity.Measurement;
@@ -11,8 +11,8 @@ import com.crud.api.enums.Unit;
 import com.crud.api.repository.MeasurementRepository;
 import com.crud.api.repository.UserInfoRepository;
 import com.crud.api.repository.UserRepository;
-import com.crud.api.service.integration.AppMySQLContainer;
-import com.crud.api.service.integration.DatabaseSetupExtension;
+import com.crud.api.integration.AppMySQLContainer;
+import com.crud.api.integration.DatabaseSetupExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Objects;
 
-import static com.crud.api.service.integration.helper.TestEntityFactory.*;
+import static com.crud.api.integration.helper.TestEntityFactory.*;
 import static com.crud.api.util.ConstantsUtils.CURRENT_WEIGHT;
 import static com.crud.api.util.ConstantsUtils.ENERGY_GOAL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

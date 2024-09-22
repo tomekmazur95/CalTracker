@@ -1,4 +1,4 @@
-package com.crud.api.service.integration.helper;
+package com.crud.api.integration.helper;
 
 import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;

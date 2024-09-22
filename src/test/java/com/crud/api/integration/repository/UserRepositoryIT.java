@@ -1,4 +1,4 @@
-package com.crud.api.service.integration.repository;
+package com.crud.api.integration.repository;
 
 import com.crud.api.entity.User;
 import com.crud.api.entity.UserInfo;
@@ -7,8 +7,8 @@ import com.crud.api.enums.Gender;
 import com.crud.api.enums.Role;
 import com.crud.api.repository.UserInfoRepository;
 import com.crud.api.repository.UserRepository;
-import com.crud.api.service.integration.AppMySQLContainer;
-import com.crud.api.service.integration.DatabaseSetupExtension;
+import com.crud.api.integration.AppMySQLContainer;
+import com.crud.api.integration.DatabaseSetupExtension;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

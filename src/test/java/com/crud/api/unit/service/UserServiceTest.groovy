@@ -1,4 +1,4 @@
-package com.crud.api.service.unit
+package com.crud.api.unit.service
 
 import com.crud.api.dto.RequestMeasurementDTO
 import com.crud.api.dto.RequestUserDTO

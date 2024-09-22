@@ -1,4 +1,4 @@
-package com.crud.api.service.integration.helper;
+package com.crud.api.integration.helper;
 
 import com.crud.api.dto.*;
 import com.crud.api.entity.*;

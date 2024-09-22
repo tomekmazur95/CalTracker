@@ -1,4 +1,4 @@
-package com.crud.api.service.integration.controller;
+package com.crud.api.integration.controller;
 
 import com.crud.api.dto.AuthenticationRequest;
 import com.crud.api.dto.RegisterRequest;
@@ -6,9 +6,9 @@ import com.crud.api.entity.UserInfo;
 import com.crud.api.enums.Role;
 import com.crud.api.error.UserAlreadyExistsException;
 import com.crud.api.repository.UserInfoRepository;
-import com.crud.api.service.integration.AppMySQLContainer;
-import com.crud.api.service.integration.DatabaseSetupExtension;
-import com.crud.api.service.integration.helper.TestJsonMapper;
+import com.crud.api.integration.AppMySQLContainer;
+import com.crud.api.integration.DatabaseSetupExtension;
+import com.crud.api.integration.helper.TestJsonMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Objects;
 
-import static com.crud.api.service.integration.helper.TestEntityFactory.*;
+import static com.crud.api.integration.helper.TestEntityFactory.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

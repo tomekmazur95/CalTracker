@@ -1,10 +1,10 @@
-package com.crud.api.service.integration.repository;
+package com.crud.api.integration.repository;
 
 import com.crud.api.entity.UserInfo;
 import com.crud.api.enums.Role;
 import com.crud.api.repository.UserInfoRepository;
-import com.crud.api.service.integration.AppMySQLContainer;
-import com.crud.api.service.integration.DatabaseSetupExtension;
+import com.crud.api.integration.AppMySQLContainer;
+import com.crud.api.integration.DatabaseSetupExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
