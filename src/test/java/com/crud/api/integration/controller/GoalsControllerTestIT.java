@@ -74,7 +74,7 @@ public class GoalsControllerTestIT extends AppMySQLContainer {
 
     @Test
     @WithMockUser(authorities = {"USER"})
-    void shouldThrowUserNotFoundExceptionInFoundUserGoalsMethod() throws Exception {
+    void shouldThrowUserNotFoundExceptionInFindUserGoalsMethod() throws Exception {
         long userId = 1;
         MvcResult result = mockMvc.perform(get("/goals/{userId}", userId))
                 .andDo(print())
