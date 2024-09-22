@@ -16,12 +16,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import static org.springframework.http.HttpMethod.*;
+
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
     private final UserInfoRepository userInfoRepository;
-
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -53,7 +54,12 @@ public class ApplicationConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedMethods("GET","PUT","POST","OPTIONS", "PATCH")
+                        .allowedMethods(GET.name(),
+                                        POST.name(),
+                                        DELETE.name(),
+                                        PUT.name(),
+                                        PATCH.name(),
+                                        OPTIONS.name())
                         .allowedOrigins("http://localhost:4200");
             }
         };
