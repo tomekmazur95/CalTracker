@@ -10,8 +10,10 @@ import com.crud.api.enums.Unit;
 import com.crud.api.integration.AppMySQLContainer;
 import com.crud.api.integration.DatabaseSetupExtension;
 import com.crud.api.repository.MeasurementRepository;
+import com.crud.api.repository.NutritionRepository;
 import com.crud.api.repository.UserInfoRepository;
 import com.crud.api.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +32,8 @@ import java.util.Objects;
 import static com.crud.api.integration.helper.TestEntityFactory.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -49,6 +52,17 @@ public class CaloriesCalculatorControllerTestIT extends AppMySQLContainer {
 
     @Autowired
     MeasurementRepository measurementRepository;
+
+    @Autowired
+    NutritionRepository nutritionRepository;
+
+    @AfterEach
+    public void clean() {
+        nutritionRepository.deleteAll();
+        measurementRepository.deleteAll();
+        userRepository.deleteAll();
+        userInfoRepository.deleteAll();
+    }
 
     @Test
     @WithMockUser(authorities = {"USER"})
@@ -98,12 +112,81 @@ public class CaloriesCalculatorControllerTestIT extends AppMySQLContainer {
 
         long userId = userDomain.getId();
 
-        mockMvc.perform(post("/user/{userId}/calories", userId)
+        MvcResult result = mockMvc.perform(post("/user/{userId}/calories", userId)
                         .param("goal", "ENERGY_TDEE"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.goal.value").value(3458))
-                .andExpect(jsonPath("$.goal.type").value("ENERGY_TDEE"))
-                .andExpect(jsonPath("$.goal.unit").value("CALORIES"));
+                .andExpect(jsonPath("$.goal.type").value(MeasureType.ENERGY_TDEE.name()))
+                .andExpect(jsonPath("$.goal.unit").value(Unit.CALORIES.name()))
+                .andReturn();
+
+        int status = result.getResponse().getStatus();
+        Assertions.assertEquals(HttpStatus.OK.value(), status);
     }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void shouldCalculateCalorieWithSurplusGoal() throws Exception {
+        UserInfo userInfoDomain = createUserInfoDomain("john@gmail.com", "password123");
+        userInfoRepository.save(userInfoDomain);
+        User userDomain = createUserDomain("John", Gender.MALE, Activity.EXTRA_ACTIVE, 53);
+        userDomain.setUserInfo(userInfoDomain);
+        userRepository.save(userDomain);
+        Measurement currentWeight = createMeasurementDomain(MeasureType.CURRENT_WEIGHT, 85.0, Unit.KILOGRAMS);
+        currentWeight.setUser(userDomain);
+        measurementRepository.save(currentWeight);
+        Measurement height = createHeight(190.0);
+        height.setUser(userDomain);
+        measurementRepository.save(height);
+
+        long userId = userDomain.getId();
+
+        MvcResult result = mockMvc.perform(post("/user/{userId}/calories", userId)
+                        .param("goal", "ENERGY_SURPLUS"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.goal.value").value(4150.0))
+                .andExpect(jsonPath("$.goal.type").value(MeasureType.ENERGY_SURPLUS.name()))
+                .andExpect(jsonPath("$.goal.unit").value(Unit.CALORIES.name()))
+                .andExpect(jsonPath("$.nutrition").exists())
+                .andExpect(jsonPath("$.activity").value(Activity.EXTRA_ACTIVE.name()))
+                .andReturn();
+
+        int status = result.getResponse().getStatus();
+        Assertions.assertEquals(HttpStatus.OK.value(), status);
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void shouldCalculateCalorieWithDeficitGoal() throws Exception {
+        UserInfo userInfoDomain = createUserInfoDomain("john@gmail.com", "password123");
+        userInfoRepository.save(userInfoDomain);
+        User userDomain = createUserDomain("John", Gender.MALE, Activity.LIGHTLY_ACTIVE, 53);
+        userDomain.setUserInfo(userInfoDomain);
+        userRepository.save(userDomain);
+        Measurement currentWeight = createMeasurementDomain(MeasureType.CURRENT_WEIGHT, 85.0, Unit.KILOGRAMS);
+        currentWeight.setUser(userDomain);
+        measurementRepository.save(currentWeight);
+        Measurement height = createHeight(190.0);
+        height.setUser(userDomain);
+        measurementRepository.save(height);
+
+        long userId = userDomain.getId();
+
+        MvcResult result = mockMvc.perform(post("/user/{userId}/calories", userId)
+                        .param("goal", "ENERGY_DEFICIT"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.goal.value").value(2002.0))
+                .andExpect(jsonPath("$.goal.type").value(MeasureType.ENERGY_DEFICIT.name()))
+                .andExpect(jsonPath("$.goal.unit").value(Unit.CALORIES.name()))
+                .andExpect(jsonPath("$.nutrition").exists())
+                .andExpect(jsonPath("$.activity").value(Activity.LIGHTLY_ACTIVE.name()))
+                .andReturn();
+
+        int status = result.getResponse().getStatus();
+        Assertions.assertEquals(HttpStatus.OK.value(), status);
+    }
+
 }
