@@ -4,15 +4,10 @@ services:
     image: mysql:5.7
     container_name: mysqldb
     restart: always
-    networks:
-      - calTracker-mysql-network
     ports:
-      - "3306:3306"
+      - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: testDb
       MYSQL_USER: user_calTracker
       MYSQL_PASSWORD: password
-
-networks:
-  calTracker-mysql-network:

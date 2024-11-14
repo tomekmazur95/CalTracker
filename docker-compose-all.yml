@@ -1,7 +1,7 @@
 services:
   mysqldb:
     image: mysql:5.7
-    container_name: mysql-db
+    container_name: mysqldb
     restart: always
     networks:
       - calTracker-network
