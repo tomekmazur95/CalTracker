@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cal-tracker-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cal-tracker
+  template:
+    metadata:
+      labels:
+        app: cal-tracker
+    spec:
+      containers:
+        - image: tomekmazur95/caltracker-backend:latest
+          name: cal-tracker
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql-service.default:3306/testDb
